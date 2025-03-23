@@ -1,11 +1,12 @@
 import './App.css'
+import BlogPage from './pages/BlogPage'
 
 function App() {
 
 
   return (
-    <div className="text-3xl font-bold underline">
-      <h1>Hi world</h1>
+    <div className="">
+      <BlogPage/>
     </div>
   )
 }
