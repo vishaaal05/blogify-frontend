@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Header } from "../components/Header";
 import Button from "../components/Button";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -10,14 +11,42 @@ const LoginPage = () => {
     password: "",
   });
 
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login Data:", formData);
-    // Add your login logic here (e.g., API call)
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await axios.post(
+        "https://blogify-backend-sxn5.onrender.com/v1/api/users/login",
+        formData
+      );
+
+      console.log("Login successful:", response.data);
+
+      // Store token in localStorage
+      localStorage.setItem("token", response.data.token);
+
+      // Redirect user after successful login
+      window.location.href = "/dashboard"; // Change route as needed
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || "Login failed!";
+      
+      // Show alert for wrong username/password
+      alert(errorMessage);
+
+      setError(errorMessage);
+      console.error("Login error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Animation variants for Framer Motion
@@ -42,7 +71,7 @@ const LoginPage = () => {
 
       {/* Login Section */}
       <motion.section
-        className="relative py-20 px-6 bg-gradient-to-r from-pink-100 to-white flex flex-col items-center"
+        className="relative py-16 px-6 bg-gradient-to-r from-pink-100 to-white flex flex-col items-center"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
@@ -93,22 +122,33 @@ const LoginPage = () => {
               />
             </motion.div>
 
+            {/* Error Message */}
+            {error && (
+              <motion.p
+                className="text-red-500 text-center"
+                variants={itemVariants}
+              >
+                {error}
+              </motion.p>
+            )}
+
             {/* Submit Button */}
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               variants={itemVariants}
             >
-              <Button label="Log In" type="submit" />
+              <Button
+                label={loading ? "Logging in..." : "Log In"}
+                type="submit"
+                disabled={loading}
+              />
             </motion.div>
           </form>
 
           {/* Link to SignUp */}
           <p className="text-center text-gray-600 mt-6">
             Don’t have an account?{" "}
-            {/* <a href="/signup" className="text-red-500 hover:underline">
-              Sign Up
-            </a> */}
             <Link to="/signup" className="text-red-500 hover:underline">
               Sign Up
             </Link>
