@@ -8,16 +8,16 @@ export const Header = () => {
     <header className="flex justify-between items-center py-4 px-6 bg-white shadow-sm">
       <div className="text-2xl font-bold text-red-500"><Link to="/home">Blogify</Link></div>
       <nav className="space-x-6">
-        <Link to="/home" className="text-gray-600 hover:text-red-500">
+        <Link to="/home" className="text-gray-600 hover:text-red-500 hover:underline ">
           Home
         </Link>
-        <Link to="/blogs" className="text-gray-600 hover:text-red-500">
+        <Link to="/blogs" className="text-gray-600 hover:text-red-500 hover:underline">
         Blog
         </Link>
-        <Link to="/Contactus" className="text-gray-600 hover:text-red-500">
+        <Link to="/Contactus" className="text-gray-600 hover:text-red-500 hover:underline">
           Reach us
         </Link>
-        <Link to="/about" className="text-gray-600 hover:text-red-500">
+        <Link to="/about" className="text-gray-600 hover:text-red-500 hover:underline">
           About
         </Link>
       </nav>
