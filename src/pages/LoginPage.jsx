@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Header } from "../components/Header";
 import Button from "../components/Button";
+import { Link } from "react-router-dom";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -105,9 +106,12 @@ const LoginPage = () => {
           {/* Link to SignUp */}
           <p className="text-center text-gray-600 mt-6">
             Don’t have an account?{" "}
-            <a href="/signup" className="text-red-500 hover:underline">
+            {/* <a href="/signup" className="text-red-500 hover:underline">
               Sign Up
-            </a>
+            </a> */}
+            <Link to="/signup" className="text-red-500 hover:underline">
+              Sign Up
+            </Link>
           </p>
         </motion.div>
       </motion.section>
