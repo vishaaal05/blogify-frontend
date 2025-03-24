@@ -4,9 +4,9 @@ import { useState } from "react";
 import BlogCards from "../components/BlogCards";
 import Button from "../components/Button";
 import { Header } from "../components/Header";
+import { Link } from "react-router-dom";
 
-
-const BlogPage = () => {
+const HomePage = () => {
   // Animation variants for Framer Motion
   const containerVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -25,7 +25,7 @@ const BlogPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
       {/* Header */}
- <Header/>
+      <Header />
 
       {/* Hero Section */}
       <motion.section
@@ -40,14 +40,14 @@ const BlogPage = () => {
         {/* Left Content */}
         <motion.div className="md:w-1/2 space-y-6 z-10" variants={itemVariants}>
           <h1 className="text-5xl font-bold text-gray-800">
-            Human stories & ideas 
+            Human stories & ideas
             <br />A Blog Journey
           </h1>
           <p className="text-gray-600">
-          A place to read, write, and deepen your
-          understanding
+            A place to read, write, and deepen your understanding
           </p>
-         <Button label="Start Reading" />
+          {/* <Button label="Start Reading" className="w-full"/> */}
+          <button className="px-6 py-3 bg-red-500 text-white rounded-full hover:bg-red-600 transition">Start Reading</button>
         </motion.div>
 
         {/* Right Image */}
@@ -98,14 +98,24 @@ const BlogPage = () => {
         </motion.div>
         <motion.div className="md:w-1/2 space-y-6" variants={itemVariants}>
           <h2 className="text-3xl font-bold text-gray-800">
-          Share your thoughts
+            Share your thoughts
           </h2>
           <p className="text-gray-600">
-          Got an idea? Share it with the world! Your words can inspire, educate, and spark conversations. 
+            Got an idea? Share it with the world! Your words can inspire,
+            educate, and spark conversations.
           </p>
-          <button className="px-6 py-3 bg-red-500 text-white rounded-full hover:bg-red-600 transition">
+          {/* <button className="px-6 py-3 bg-red-500 text-white rounded-full hover:bg-red-600 transition">
             Write a Blog
-          </button>
+          </button> */}
+          <p>
+            <Link
+              to="/signup"
+              className="px-6 py-3 mt-6 bg-red-500 text-white rounded-full hover:bg-red-600 transition"
+            >
+              {" "}
+              Write a Blog{" "}
+            </Link>
+          </p>
         </motion.div>
       </motion.section>
 
@@ -129,4 +139,4 @@ const BlogPage = () => {
   );
 };
 
-export default BlogPage;
+export default HomePage;

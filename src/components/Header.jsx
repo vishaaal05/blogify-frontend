@@ -1,43 +1,32 @@
-import React from 'react'
-import { useState } from 'react';
-import Button from "../components/Button";
-export const Header = ({label}) => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+import { useState } from "react";
+import { Link } from "react-router-dom";
+
+export const Header = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   return (
-    <div>      {/* Header */}
     <header className="flex justify-between items-center py-4 px-6 bg-white shadow-sm">
-      <div className="text-2xl font-bold text-red-500">Blogify</div>
+      <div className="text-2xl font-bold text-red-500"><Link to="/home">Blogify</Link></div>
       <nav className="space-x-6">
-        <a href="#" className="text-gray-600 hover:text-red-500">
+        <Link to="/home" className="text-gray-600 hover:text-red-500">
           Home
-        </a>
-        <a href="#" className="text-gray-600 hover:text-red-500">
-          Category
-        </a>
-        <a href="#" className="text-gray-600 hover:text-red-500">
-        About
-        </a>
-        <a href="#" className="text-gray-600 hover:text-red-500">
-          Contact
-        </a>
+        </Link>
+        <Link to="/blogs" className="text-gray-600 hover:text-red-500">
+        Blog
+        </Link>
+        <Link to="/Contactus" className="text-gray-600 hover:text-red-500">
+          Reach us
+        </Link>
+        <Link to="/about" className="text-gray-600 hover:text-red-500">
+          About
+        </Link>
       </nav>
-      <div className='flex gap-8'>
-      <Button
-        onClick={() => setIsLoggedIn(!isLoggedIn)}
-        className=" bg-red-500 text-white rounded-full hover:bg-red-600 transition"
-        label="Login"
+      <Link
+        to="/login"
+        className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition"
       >
-        {isLoggedIn ? "Logout" : "Login"}
-      </Button>
-      <Button
-        onClick={() => setIsLoggedIn(!isLoggedIn)}
-        className="px- py- bg-red-500 text-white rounded-full hover:bg-red-600 transition"
-        label="Sign up"
-      >
-        {isLoggedIn ? "Logout" : "Login"}
-      </Button>
-      </div>
-      
-    </header></div>
-  )
-}
+        Login
+      </Link>
+    </header>
+  );
+};
