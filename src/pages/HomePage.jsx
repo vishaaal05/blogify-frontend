@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
 // import { blogPosts } from "../Constants";
 import BlogCards from "../components/BlogCards";
 import Button from "../components/Button";
@@ -46,7 +45,6 @@ const HomePage = () => {
           <p className="text-gray-600">
             A place to read, write, and deepen your understanding
           </p>
-          {/* <Button label="Start Reading" className="w-full"/> */}
           <button className="px-6 py-3 bg-red-500 text-white rounded-full hover:bg-red-600 transition">Start Reading</button>
         </motion.div>
 
@@ -104,9 +102,6 @@ const HomePage = () => {
             Got an idea? Share it with the world! Your words can inspire,
             educate, and spark conversations.
           </p>
-          {/* <button className="px-6 py-3 bg-red-500 text-white rounded-full hover:bg-red-600 transition">
-            Write a Blog
-          </button> */}
           <p>
             <Link
               to="/signup"
@@ -118,23 +113,6 @@ const HomePage = () => {
           </p>
         </motion.div>
       </motion.section>
-
-      {/* Trending Blogs Section */}
-      {/* <motion.section
-        className="py-16 px-6"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={containerVariants}
-      >
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-800">Trending Blogs</h2>
-          <a href="#" className="text-red-500 hover:underline">
-            View More
-          </a>
-        </div>
-        <BlogCards/>
-      </motion.section> */}
     </div>
   );
 };
