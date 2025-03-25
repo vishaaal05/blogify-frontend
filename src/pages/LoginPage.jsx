@@ -41,8 +41,11 @@ const LoginPage = () => {
       
       // Show alert for wrong username/password
       alert(errorMessage);
-
       setError(errorMessage);
+      setFormData({
+        email: "",
+        password: "",
+      });
       console.error("Login error:", err);
     } finally {
       setLoading(false);
