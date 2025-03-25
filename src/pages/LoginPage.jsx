@@ -4,8 +4,10 @@ import { Header } from "../components/Header";
 import Button from "../components/Button";
 import { Link } from "react-router-dom";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
 const LoginPage = () => {
+
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -35,7 +37,7 @@ const LoginPage = () => {
       localStorage.setItem("token", response.data.token);
 
       // Redirect user after successful login
-      window.location.href = "/dashboard"; // Change route as needed
+      navigate('/dashboard'); // Change route as needed
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Login failed!";
       
