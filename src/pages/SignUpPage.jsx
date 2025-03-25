@@ -4,6 +4,8 @@ import { Header } from "../components/Header";
 import Button from "../components/Button";
 
 const SignUpPage = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -16,8 +18,10 @@ const SignUpPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
     console.log("Sign Up Data:", formData);
-    // Add your sign-up logic here (e.g., API call)
+ 
   };
 
   // Animation variants for Framer Motion
@@ -116,7 +120,11 @@ const SignUpPage = () => {
               whileTap={{ scale: 0.95 }}
               variants={itemVariants}
             >
-              <Button label="Sign Up" type="submit" />
+              <Button
+                label={loading ? "Signing up..." : "Sign up"}
+                type="submit"
+                disabled={loading}
+              />
             </motion.div>
           </form>
 
