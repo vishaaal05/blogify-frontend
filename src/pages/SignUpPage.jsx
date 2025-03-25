@@ -3,8 +3,9 @@ import { useState } from "react";
 import axios from "axios";
 import { Header } from "../components/Header";
 import Button from "../components/Button";
-
+import { useNavigate } from "react-router-dom";
 const SignUpPage = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -29,9 +30,11 @@ const SignUpPage = () => {
         "https://blogify-backend-sxn5.onrender.com/v1/api/users/register",
         formData
       );
-      
+      alert("Registered successfully!")
       setSuccess("User registered successfully!");
       setFormData({ name: "", email: "", password: "" });
+      navigate('/login');
+
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong!");
     } finally {
