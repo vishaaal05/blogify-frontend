@@ -4,6 +4,7 @@ import axios from "axios";
 import { Header } from "../components/Header";
 import Button from "../components/Button";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 const SignUpPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -111,7 +112,7 @@ const SignUpPage = () => {
           </form>
 
           <p className="text-center text-gray-600 mt-6">
-            Already have an account? <a href="/login" className="text-red-500 hover:underline">Log In</a>
+            Already have an account? <Link to='/login' className="text-red-500 hover:underline">Log in</Link>
           </p>
         </motion.div>
       </motion.section>
