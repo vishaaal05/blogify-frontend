@@ -61,7 +61,7 @@ const BlogCards = () => {
             <p className="text-gray-600 text-sm">Author : {post.author.name}</p>
             <div className="flex items-center mt-2">
               {/* Rating isn't available in API, adding placeholder stars */}
-              {/* <span className="text-yellow-500">★★★★☆</span> */}
+              {/* <span className="text-gray-600">{post.likes.userId}</span> */}
               <span className="ml-2 text-gray-600 text-sm">
                 {post.readingTime ? `${post.readingTime} min read` : 'N/A'}
               </span>
