@@ -47,7 +47,7 @@ const HomePage = () => {
           </p>
           {/* <button className="px-6 py-3 bg-red-500 text-white rounded-full hover:bg-red-600 transition">Start Reading</button> */}
           <p>
-          <Link to="blogs" className="px-6 py-3 bg-red-500 text-white rounded-full hover:bg-red-600 transition">Start Reading</Link>
+          <Link to="/blogs" className="px-6 py-3 bg-red-500 text-white rounded-full hover:bg-red-600 transition">Start Reading</Link>
           </p>
           
         </motion.div>
