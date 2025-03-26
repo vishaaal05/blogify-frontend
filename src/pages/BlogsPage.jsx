@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import { Header } from "../components/Header";
+import BlogCards from "../components/BlogCards";
 
 const BlogsPage = () => {
-  return (
-    <div>BlogsPage</div>
-  )
-}
+  return <div>
+    <Header/>
+    <BlogCards/>
+  </div>;
+};
 
-export default BlogsPage
+export default BlogsPage;
