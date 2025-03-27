@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
+import { Header } from '../components/Header';
 
 // Animation Variants
 const containerVariants = {
@@ -110,6 +111,7 @@ const BlogPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
+        <Header/>
       <motion.section
         className="relative py-16 px-6 bg-gradient-to-r from-pink-100 to-white flex flex-col items-center"
         variants={containerVariants}

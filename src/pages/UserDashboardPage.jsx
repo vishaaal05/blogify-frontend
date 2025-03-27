@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import { motion } from 'framer-motion';
+import { Header } from '../components/Header';
 
 // Animation Variants
 const containerVariants = {
@@ -132,6 +133,7 @@ const UserDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
+            <Header/>
       <motion.section
         className="relative py-16 px-6 bg-gradient-to-r from-pink-100 to-white flex flex-col items-center"
         variants={containerVariants}
@@ -208,7 +210,7 @@ const UserDashboard = () => {
                 to="/author/dashboard"
                 className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
               >
-                Go to admin dashboard
+                Go to author dashboard
               </Link>
             </div>
           </motion.div>

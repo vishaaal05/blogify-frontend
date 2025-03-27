@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-import axios from 'axios';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
+import { motion } from "framer-motion";
+import { Header } from "../components/Header";
 
 // Animation Variants
 const containerVariants = {
@@ -10,7 +11,7 @@ const containerVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, ease: 'easeOut', staggerChildren: 0.2 },
+    transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.2 },
   },
 };
 
@@ -33,16 +34,16 @@ const DashboardPage = () => {
 
   useEffect(() => {
     const checkAuthAndFetchPosts = async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        navigate('/login');
+        navigate("/login");
         return;
       }
 
       try {
         // Decode token to get user info
         const decoded = jwtDecode(token);
-        console.log('Decoded Token:', decoded);
+        console.log("Decoded Token:", decoded);
         setUser(decoded);
 
         // Fetch user's posts
@@ -52,18 +53,20 @@ const DashboardPage = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        console.log('Raw API Response:', response.data);
+        console.log("Raw API Response:", response.data);
 
         // Extract the 'data' array from response.data
-        const fetchedPosts = Array.isArray(response.data.data) ? response.data.data : [];
+        const fetchedPosts = Array.isArray(response.data.data)
+          ? response.data.data
+          : [];
         setPosts(fetchedPosts);
-        console.log('Set Posts:', fetchedPosts);
+        console.log("Set Posts:", fetchedPosts);
         setLoading(false);
       } catch (err) {
-        console.error('Error:', err.response?.data || err.message);
-        setError('Failed to load dashboard. Please log in again.');
-        localStorage.removeItem('token');
-        navigate('/login');
+        console.error("Error:", err.response?.data || err.message);
+        setError("Failed to load dashboard. Please log in again.");
+        localStorage.removeItem("token");
+        navigate("/login");
       }
     };
 
@@ -71,23 +74,26 @@ const DashboardPage = () => {
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   const handleDeletePost = async (postId) => {
-    const token = localStorage.getItem('token');
-    if (!confirm('Are you sure you want to delete this post?')) return;
+    const token = localStorage.getItem("token");
+    if (!confirm("Are you sure you want to delete this post?")) return;
 
     try {
-      await axios.delete(`https://blogify-backend-sxn5.onrender.com/v1/api/posts/${postId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(
+        `https://blogify-backend-sxn5.onrender.com/v1/api/posts/${postId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setPosts(posts.filter((post) => post.id !== postId));
-      alert('Post deleted successfully!');
+      alert("Post deleted successfully!");
     } catch (err) {
-      console.error('Delete Error:', err.response?.data || err.message);
-      alert('Failed to delete post.');
+      console.error("Delete Error:", err.response?.data || err.message);
+      alert("Failed to delete post.");
     }
   };
 
@@ -95,11 +101,14 @@ const DashboardPage = () => {
     navigate(`/update-post/${postId}`);
   };
 
-  if (loading) return <div className="text-center py-8 text-gray-600">Loading...</div>;
-  if (error) return <div className="text-center py-8 text-red-500">{error}</div>;
+  if (loading)
+    return <div className="text-center py-8 text-gray-600">Loading...</div>;
+  if (error)
+    return <div className="text-center py-8 text-red-500">{error}</div>;
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
+      <Header/>
       <motion.section
         className="relative py-16 px-6 bg-gradient-to-r from-pink-100 to-white flex flex-col items-center"
         variants={containerVariants}
@@ -112,9 +121,12 @@ const DashboardPage = () => {
           className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl z-10"
           variants={itemVariants}
         >
-          <motion.div className="flex justify-between items-center mb-8" variants={itemVariants}>
+          <motion.div
+            className="flex justify-between items-center mb-8"
+            variants={itemVariants}
+          >
             <h1 className="text-4xl md:text-5xl font-bold text-gray-800">
-              Welcome, {user?.email || 'User'}!
+              Welcome, {user?.email || "User"}!
             </h1>
             <button
               onClick={handleLogout}
@@ -124,19 +136,25 @@ const DashboardPage = () => {
             </button>
           </motion.div>
 
-          <motion.div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" variants={itemVariants}>
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"
+            variants={itemVariants}
+          >
             <motion.div
               className="bg-gray-50 p-6 rounded-lg shadow-sm"
               variants={itemVariants}
               whileHover={{ scale: 1.02 }}
-              transition={{ type: 'spring', stiffness: 300 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Your Profile</h2>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+                Your Profile
+              </h2>
               <p className="text-gray-600">
-                Email: <span className="font-medium">{user?.email || 'N/A'}</span>
+                Email:{" "}
+                <span className="font-medium">{user?.email || "N/A"}</span>
               </p>
               <p className="text-gray-600">
-                ID: <span className="font-medium">{user?.id || 'N/A'}</span>
+                ID: <span className="font-medium">{user?.id || "N/A"}</span>
               </p>
             </motion.div>
 
@@ -144,11 +162,14 @@ const DashboardPage = () => {
               className="bg-gray-50 p-6 rounded-lg shadow-sm"
               variants={itemVariants}
               whileHover={{ scale: 1.02 }}
-              transition={{ type: 'spring', stiffness: 300 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Your Stats</h2>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+                Your Stats
+              </h2>
               <p className="text-gray-600">
-                Posts Created: <span className="font-medium">{posts.length}</span>
+                Posts Created:{" "}
+                <span className="font-medium">{posts.length}</span>
               </p>
               <p className="text-gray-600">
                 Likes Received: <span className="font-medium">Coming Soon</span>
@@ -158,9 +179,13 @@ const DashboardPage = () => {
 
           {/* User's Posts */}
           <motion.div variants={itemVariants}>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Your Posts</h2>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+              Your Posts
+            </h2>
             {posts.length === 0 ? (
-              <p className="text-gray-600">You haven’t created any posts yet.</p>
+              <p className="text-gray-600">
+                You haven’t created any posts yet.
+              </p>
             ) : (
               <div className="space-y-4">
                 {posts.map((post) => (
@@ -169,13 +194,26 @@ const DashboardPage = () => {
                     className="bg-gray-50 p-4 rounded-lg shadow-sm flex justify-between items-center"
                     variants={postVariants}
                     whileHover={{ scale: 1.01 }}
-                    transition={{ type: 'spring', stiffness: 200 }}
+                    transition={{ type: "spring", stiffness: 200 }}
                   >
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-800">{post.title}</h3>
-                      <p className="text-gray-600 text-sm">{post.content.substring(0, 100)}...</p>
+                      <h3 className="text-lg font-semibold text-gray-800">
+                        {post.title}
+                      </h3>
+                      <p className="text-gray-600 text-sm">
+                        {post.content.substring(0, 100)}...
+                      </p>
                       <p className="text-gray-500 text-sm">
-                        Status: <span className={post.status === 'published' ? 'text-green-500' : 'text-yellow-500'}>{post.status}</span>
+                        Status:{" "}
+                        <span
+                          className={
+                            post.status === "published"
+                              ? "text-green-500"
+                              : "text-yellow-500"
+                          }
+                        >
+                          {post.status}
+                        </span>
                       </p>
                     </div>
                     <div className="flex gap-2">
@@ -200,19 +238,21 @@ const DashboardPage = () => {
 
           {/* Quick Links */}
           <motion.div className="mt-8" variants={itemVariants}>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Quick Links</h2>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+              Quick Links
+            </h2>
             <div className="flex flex-wrap gap-4">
               <Link
-                to="/blogs"
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
-              >
-                View Blogs
-              </Link>
-              <Link
-                to="/create-post"
+                to="/create/post"
                 className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
               >
                 Create New Post
+              </Link>
+              <Link
+                to="/user/dashboard"
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+              >
+                Go to user dashboard
               </Link>
             </div>
           </motion.div>
