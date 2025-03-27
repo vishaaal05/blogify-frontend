@@ -17,7 +17,8 @@ const BlogsPage = () => {
     const fetchPosts = async () => {
       try {
         const response = await axios.get('https://blogify-backend-sxn5.onrender.com/v1/api/posts');
-        setPosts(response.data); // Show all posts (or filter as needed)
+        const publishedPosts = response.data.filter((post) => post.status === "published");
+        setPosts(publishedPosts); // Show all posts (or filter as needed)
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch blog posts');
