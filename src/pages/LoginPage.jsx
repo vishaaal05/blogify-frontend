@@ -37,7 +37,7 @@ const LoginPage = () => {
       localStorage.setItem("token", response.data.token);
 
       // Redirect user after successful login
-      navigate('/user-dashboard'); // Change route as needed
+      navigate('/user/dashboard'); // Change route as needed
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Login failed!";
       
