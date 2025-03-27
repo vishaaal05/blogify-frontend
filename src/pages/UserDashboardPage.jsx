@@ -31,6 +31,7 @@ const UserDashboard = () => {
   const [likedPosts, setLikedPosts] = useState([]);
   const [favoritedPosts, setFavoritedPosts] = useState([]);
   const [commentedPosts, setCommentedPosts] = useState([]);
+  const [userPosts, setUserPosts] = useState([]); // New state for user's posts
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -48,32 +49,49 @@ const UserDashboard = () => {
         console.log('Decoded Token:', decoded);
         setUser(decoded);
 
-        // Fetch all posts
-        const response = await axios.get('https://blogify-backend-sxn5.onrender.com/v1/api/posts', {
+        // Fetch all posts for liked and commented filtering
+        const postsResponse = await axios.get('https://blogify-backend-sxn5.onrender.com/v1/api/posts', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log('Raw Posts Response:', response.data); // Debug raw response
+        console.log('Raw Posts Response:', postsResponse.data);
+        const allPosts = Array.isArray(postsResponse.data.data)
+          ? postsResponse.data.data
+          : Array.isArray(postsResponse.data)
+          ? postsResponse.data
+          : [];
+        console.log('Processed allPosts:', allPosts);
 
-        // Ensure allPosts is an array
-        const allPosts = Array.isArray(response.data.data) ? response.data.data : Array.isArray(response.data) ? response.data : [];
-        console.log('Processed allPosts:', allPosts); // Debug processed posts
-
-        // Filter liked posts with safeguard
+        // Filter liked posts
         const liked = allPosts.filter((post) =>
           post.likes && Array.isArray(post.likes) && post.likes.some((like) => like.userId === decoded.id)
         );
         setLikedPosts(liked);
 
-        // Filter commented posts with safeguard
+        // Filter commented posts
         const commented = allPosts.filter((post) =>
           post.comments && Array.isArray(post.comments) && post.comments.some((comment) => comment.userId === decoded.id)
         );
         setCommentedPosts(commented);
 
-        // Load favorited posts from localStorage (placeholder)
+        // Load favorited posts from localStorage
         const storedFavorites = JSON.parse(localStorage.getItem('favoritedPosts') || '[]');
         const favorited = allPosts.filter((post) => storedFavorites.includes(post.id));
         setFavoritedPosts(favorited);
+
+        // Fetch user's own posts to check author status
+        const authorResponse = await axios.get(
+          `https://blogify-backend-sxn5.onrender.com/v1/api/posts/author/${decoded.id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        console.log('Author Posts Response:', authorResponse.data);
+        const userPostsData = Array.isArray(authorResponse.data.data)
+          ? authorResponse.data.data
+          : Array.isArray(authorResponse.data)
+          ? authorResponse.data
+          : [];
+        setUserPosts(userPostsData);
 
         setLoading(false);
       } catch (err) {
@@ -133,7 +151,7 @@ const UserDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
-            <Header/>
+      <Header />
       <motion.section
         className="relative py-16 px-6 bg-gradient-to-r from-pink-100 to-white flex flex-col items-center"
         variants={containerVariants}
@@ -190,6 +208,9 @@ const UserDashboard = () => {
               <p className="text-gray-600">
                 Commented Posts: <span className="font-medium">{commentedPosts.length}</span>
               </p>
+              <p className="text-gray-600">
+                Your Posts: <span className="font-medium">{userPosts.length}</span>
+              </p>
             </motion.div>
           </motion.div>
 
@@ -206,12 +227,16 @@ const UserDashboard = () => {
               >
                 View All Blogs
               </Link>
-              <Link
-                to="/author/dashboard"
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-              >
-                Go to author dashboard
-              </Link>
+              {userPosts.length > 0 ? (
+                <Link
+                  to="/author/dashboard"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                >
+                  Go to Author Dashboard
+                </Link>
+              ) : (
+                <Link to='/create/post' className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">Become an Author</Link>
+              )}
             </div>
           </motion.div>
         </motion.div>
