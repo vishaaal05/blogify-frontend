@@ -205,10 +205,10 @@ const UserDashboard = () => {
                 View All Blogs
               </Link>
               <Link
-                to="/dashboard"
+                to="/admin-dashboard"
                 className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
               >
-                My Posts
+                Go to admin dashboard
               </Link>
             </div>
           </motion.div>
