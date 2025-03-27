@@ -6,7 +6,7 @@ export const Header = () => {
   const location = useLocation(); 
 
   // Hide login button on login and signup pages
-  const hideLogin = location.pathname === "/login" || location.pathname === "/signup";
+  const hideLogin = location.pathname === "/login" || location.pathname === "/signup" || location.pathname==="/author/dashboard" || location.pathname==="/user/dashboard";
 
   return (
     <header className="flex justify-between items-center py-4 px-6 bg-white shadow-sm">
