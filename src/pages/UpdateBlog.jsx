@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-
+import { Link } from 'react-router-dom';
 // Animation Variants
 const containerVariants = {
   hidden: { opacity: 0, y: 50 },
