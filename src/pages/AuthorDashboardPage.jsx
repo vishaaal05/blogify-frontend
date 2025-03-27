@@ -98,7 +98,7 @@ const DashboardPage = () => {
   };
 
   const handleUpdatePost = (postId) => {
-    navigate(`/update-post/${postId}`);
+    navigate(`/update/post/${postId}`);
   };
 
   if (loading)
