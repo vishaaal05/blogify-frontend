@@ -7,6 +7,7 @@ import AuthorDashboardPage from "./pages/AuthorDashboardPage";
 import BlogsPage from "./pages/BlogsPage";
 import BlogPage from "./pages/BlogPage";
 import UserDashboard from "./pages/UserDashboardPage";
+import CreateBlog from "./pages/CreateBlog";
 function App() {
   return (
     <Router>
@@ -20,6 +21,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/author/dashboard" element={<AuthorDashboardPage />} />
           <Route path="/blogs" element={<BlogsPage />}></Route>
+          <Route path="/create/post" element={<CreateBlog/>}></Route>
         </Routes>
       </div>
     </Router>
