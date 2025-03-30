@@ -4,6 +4,11 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import { Editor } from 'primereact/editor'; // Import PrimeReact Editor
+import 'primereact/resources/themes/lara-light-indigo/theme.css'; // Theme
+import 'primereact/resources/primereact.min.css'; // Core CSS
+import 'primeicons/primeicons.css'; // Icons
+
 // Animation Variants
 const containerVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -22,7 +27,7 @@ const itemVariants = {
 const CreateBlog = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState(''); // Content now stores HTML from Editor
   const [featuredImg, setFeaturedImg] = useState('');
   const [status, setStatus] = useState('draft'); // Default to draft
   const [loading, setLoading] = useState(false);
@@ -48,9 +53,9 @@ const CreateBlog = () => {
         'https://blogify-backend-sxn5.onrender.com/v1/api/posts/create',
         {
           title,
-          content,
+          content, // Send HTML content from Editor
           authorId,
-          featuredImg: featuredImg || null, // Send null if empty
+          featuredImg: featuredImg || null,
           status,
         },
         {
@@ -62,7 +67,7 @@ const CreateBlog = () => {
       );
       console.log('Blog Created:', response.data);
       alert('Blog post created successfully!');
-      navigate('/author/dashboard'); // Redirect to author dashboard
+      navigate('/author/dashboard');
     } catch (err) {
       console.error('Error creating blog:', err.response?.data || err.message);
       setError(err.response?.data?.message || 'Failed to create blog post.');
@@ -118,18 +123,17 @@ const CreateBlog = () => {
               />
             </motion.div>
 
-            {/* Content */}
+            {/* Content (PrimeReact Editor) */}
             <motion.div variants={itemVariants}>
               <label htmlFor="content" className="block text-lg font-semibold text-gray-800 mb-2">
                 Content
               </label>
-              <textarea
-                id="content"
+              <Editor
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-40"
+                onTextChange={(e) => setContent(e.htmlValue || '')} // Store HTML content
+                style={{ height: '320px' }}
+                className="w-full border border-gray-300 rounded-lg"
                 placeholder="Write your blog content here..."
-                required
               />
             </motion.div>
 
