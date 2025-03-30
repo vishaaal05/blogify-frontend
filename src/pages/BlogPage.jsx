@@ -32,6 +32,7 @@ const BlogPage = () => {
   const [error, setError] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
+  const [newComment, setNewComment] = useState(''); // State for new comment input
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -40,7 +41,6 @@ const BlogPage = () => {
         setPost(response.data.post);
         setLoading(false);
 
-        // Check if user has liked the post
         const token = localStorage.getItem('token');
         if (token) {
           const userId = JSON.parse(atob(token.split('.')[1])).id;
@@ -65,31 +65,28 @@ const BlogPage = () => {
     }
 
     try {
-      const userId = JSON.parse(atob(token.split('.')[1])).id; // Get user ID from token
+      const userId = JSON.parse(atob(token.split('.')[1])).id;
       const response = await axios.post(
         'https://blogify-backend-sxn5.onrender.com/v1/api/likes/toggle',
         { postId: id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // Optimistically update the likes count and state
       setPost((prevPost) => {
         const newLikes = isLiked
-          ? prevPost.likes.filter((like) => like.userId !== userId) // Remove like
-          : [...prevPost.likes, { id: `${userId}-${id}`, userId, postId: id, createdAt: new Date() }]; // Add like
+          ? prevPost.likes.filter((like) => like.userId !== userId)
+          : [...prevPost.likes, { id: `${userId}-${id}`, userId, postId: id, createdAt: new Date() }];
         return { ...prevPost, likes: newLikes };
       });
       setIsLiked(!isLiked);
 
-      // If API returns updated likes, use that instead
       if (response.data.likes) {
         setPost((prevPost) => ({ ...prevPost, likes: response.data.likes }));
       }
     } catch (err) {
       console.error('Error toggling like:', err.response?.data || err.message);
       alert('Failed to toggle like.');
-      // Revert state on error (optional)
-      setIsLiked(isLiked); // Keep old state
+      setIsLiked(isLiked);
     }
   };
 
@@ -105,13 +102,51 @@ const BlogPage = () => {
     alert(isFavorited ? 'Removed from favorites!' : 'Added to favorites!');
   };
 
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('You must be logged in to comment.');
+      navigate('/login');
+      return;
+    }
+
+    if (!newComment.trim()) {
+      alert('Comment cannot be empty.');
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        'https://blogify-backend-sxn5.onrender.com/v1/api/comments/',
+        { postId: id, content: newComment },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const newCommentData = {
+        id: response.data.id || Date.now().toString(),
+        content: newComment,
+        createdAt: new Date().toISOString(),
+      };
+
+      setPost((prevPost) => ({
+        ...prevPost,
+        comments: [...prevPost.comments, newCommentData],
+      }));
+      setNewComment('');
+    } catch (err) {
+      console.error('Error posting comment:', err.response?.data || err.message);
+      alert('Failed to post comment.');
+    }
+  };
+
   if (loading) return <div className="text-center py-8 text-gray-600">Loading...</div>;
   if (error) return <div className="text-center py-8 text-red-500">{error}</div>;
   if (!post) return <div className="text-center py-8 text-gray-600">Post not found</div>;
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
-        <Header/>
+      <Header />
       <motion.section
         className="relative py-16 px-6 bg-gradient-to-r from-pink-100 to-white flex flex-col items-center"
         variants={containerVariants}
@@ -157,14 +192,12 @@ const BlogPage = () => {
             </div>
           </motion.div>
 
-          {/* Like and Favorite Buttons */}
           <motion.div className="flex gap-4 mb-6" variants={itemVariants}>
             <button
               onClick={handleLikeToggle}
               className={`px-4 py-2 rounded-lg transition ${isLiked ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-800'} hover:bg-red-600 hover:text-white`}
             >
-              {isLiked ? 'Unlike' : 'Like'} 
-              {/* ({post.likes.length}) */}
+              {isLiked ? 'Unlike' : 'Like'}
             </button>
             <button
               onClick={handleFavoriteToggle}
@@ -181,12 +214,29 @@ const BlogPage = () => {
             <p>{post.content}</p>
           </motion.div>
 
-          {post.comments.length > 0 && (
-            <motion.div variants={itemVariants}>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-                Comments ({post.comments.length})
-              </h2>
-              {post.comments.map((comment) => (
+          <motion.div variants={itemVariants}>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+              Comments ({post.comments.length})
+            </h2>
+
+            <form onSubmit={handleCommentSubmit} className="mb-8">
+              <textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Write your comment..."
+                className="w-full p-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 mb-4"
+                rows="4"
+              />
+              <button
+                type="submit"
+                className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+              >
+                Post Comment
+              </button>
+            </form>
+
+            {post.comments.length > 0 ? (
+              post.comments.map((comment) => (
                 <motion.div
                   key={comment.id}
                   className="bg-gray-50 p-4 rounded-lg shadow-sm mb-4 flex flex-col"
@@ -199,9 +249,11 @@ const BlogPage = () => {
                     Posted on {new Date(comment.createdAt).toLocaleDateString()}
                   </p>
                 </motion.div>
-              ))}
-            </motion.div>
-          )}
+              ))
+            ) : (
+              <p className="text-gray-600">No comments yet. Be the first to comment!</p>
+            )}
+          </motion.div>
 
           <motion.div
             className="flex justify-between items-center text-sm text-gray-500 mt-8"
