@@ -246,9 +246,8 @@ const BlogPage = () => {
           <motion.div
             className="prose prose-lg text-gray-700 mb-10 border-l-4 border-red-500 pl-4"
             variants={itemVariants}
-          >
-            <p>{post.content}</p>
-          </motion.div>
+            dangerouslySetInnerHTML={{ __html: post.content }} // Updated to render HTML
+          />
 
           <motion.div variants={itemVariants}>
             <h2 className="text-2xl font-semibold text-gray-800 mb-6">
