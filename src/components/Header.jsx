@@ -3,10 +3,14 @@ import { Link, useLocation } from "react-router-dom";
 
 export const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const location = useLocation(); 
+  const location = useLocation();
 
   // Hide login button on login and signup pages
-  const hideLogin = location.pathname === "/login" || location.pathname === "/signup" || location.pathname==="/author/dashboard" || location.pathname==="/user/dashboard";
+  const hideLogin =
+    location.pathname === "/login" ||
+    location.pathname === "/signup" ||
+    location.pathname === "/author/dashboard" ||
+    location.pathname === "/user/dashboard";
 
   return (
     <header className="flex justify-between items-center py-4 px-6 bg-white shadow-sm">
@@ -14,16 +18,28 @@ export const Header = () => {
         <Link to="/home">Blogify</Link>
       </div>
       <nav className="space-x-6">
-        <Link to="/home" className="text-gray-600 hover:text-red-500 hover:underline">
+        <Link
+          to="/home"
+          className="text-gray-600 hover:text-red-500 hover:underline"
+        >
           Home
         </Link>
-        <Link to="/blogs" className="text-gray-600 hover:text-red-500 hover:underline">
+        <Link
+          to="/blogs"
+          className="text-gray-600 hover:text-red-500 hover:underline"
+        >
           Blog
         </Link>
-        <Link to="/Contactus" className="text-gray-600 hover:text-red-500 hover:underline">
+        <Link
+          to="/Contactus"
+          className="text-gray-600 hover:text-red-500 hover:underline"
+        >
           Reach us
         </Link>
-        <Link to="/about" className="text-gray-600 hover:text-red-500 hover:underline">
+        <Link
+          to="/about"
+          className="text-gray-600 hover:text-red-500 hover:underline"
+        >
           About
         </Link>
       </nav>
