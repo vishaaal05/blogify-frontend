@@ -35,7 +35,7 @@ const SignUpPage = () => {
       alert("Registered successfully!");
       setSuccess("User registered successfully!");
       setFormData({ name: "", email: "", password: "" });
-      navigate('/login');
+      navigate("/login");
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong!");
     } finally {
@@ -49,30 +49,30 @@ const SignUpPage = () => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { 
-        duration: 0.8, 
-        ease: "easeOut", 
-        staggerChildren: 0.3 
+      transition: {
+        duration: 0.8,
+        ease: "easeOut",
+        staggerChildren: 0.3,
       },
     },
   };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { duration: 0.5 } 
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 },
     },
   };
 
   const inputVariants = {
     hover: { scale: 1.02 },
-    focus: { 
+    focus: {
       scale: 1.02,
       borderColor: "#ef4444",
-      transition: { duration: 0.2 }
-    }
+      transition: { duration: 0.2 },
+    },
   };
 
   return (
@@ -87,11 +87,11 @@ const SignUpPage = () => {
         {/* Background Decorative Shape */}
         <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-pink-200 rounded-bl-full opacity-50"></div>
 
-        <motion.div 
+        <motion.div
           className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md z-10"
           variants={itemVariants}
         >
-          <motion.h2 
+          <motion.h2
             className="text-3xl font-bold text-gray-800 text-center mb-6"
             variants={itemVariants}
           >
@@ -99,7 +99,7 @@ const SignUpPage = () => {
           </motion.h2>
 
           {error && (
-            <motion.p 
+            <motion.p
               className="text-red-500 text-center mb-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -109,7 +109,7 @@ const SignUpPage = () => {
             </motion.p>
           )}
           {success && (
-            <motion.p 
+            <motion.p
               className="text-green-500 text-center mb-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -182,23 +182,20 @@ const SignUpPage = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Button 
-                label={loading ? "Signing up..." : "Sign up"} 
-                type="submit" 
-                disabled={loading} 
+              <Button
+                label={loading ? "Signing up..." : "Sign up"}
+                type="submit"
+                disabled={loading}
               />
             </motion.div>
           </form>
 
-          <motion.p 
+          <motion.p
             className="text-center text-gray-600 mt-6"
             variants={itemVariants}
           >
-            Already have an account?{' '}
-            <Link 
-              to='/login' 
-              className="text-red-500 hover:underline"
-            >
+            Already have an account?{" "}
+            <Link to="/login" className="text-red-500 hover:underline">
               Log in
             </Link>
           </motion.p>
