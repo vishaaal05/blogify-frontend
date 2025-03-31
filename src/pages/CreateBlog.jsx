@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-import { Editor } from 'primereact/editor'; // Import PrimeReact Editor
-import 'primereact/resources/themes/lara-light-indigo/theme.css'; // Theme
-import 'primereact/resources/primereact.min.css'; // Core CSS
-import 'primeicons/primeicons.css'; // Icons
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import { Editor } from "primereact/editor"; // Import PrimeReact Editor
+import "primereact/resources/themes/lara-light-indigo/theme.css"; // Theme
+import "primereact/resources/primereact.min.css"; // Core CSS
+import "primeicons/primeicons.css"; // Icons
 
 // Animation Variants
 const containerVariants = {
@@ -15,7 +15,7 @@ const containerVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, ease: 'easeOut', staggerChildren: 0.2 },
+    transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.2 },
   },
 };
 
@@ -26,20 +26,20 @@ const itemVariants = {
 
 const CreateBlog = () => {
   const navigate = useNavigate();
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState(''); // Content now stores HTML from Editor
-  const [featuredImg, setFeaturedImg] = useState('');
-  const [status, setStatus] = useState('draft'); // Default to draft
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState(""); // Content now stores HTML from Editor
+  const [featuredImg, setFeaturedImg] = useState("");
+  const [status, setStatus] = useState("draft"); // Default to draft
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      alert('You must be logged in to create a blog post.');
-      navigate('/login');
+      alert("You must be logged in to create a blog post.");
+      navigate("/login");
       return;
     }
 
@@ -50,7 +50,7 @@ const CreateBlog = () => {
     const authorId = decoded.id;
     try {
       const response = await axios.post(
-        'https://blogify-backend-sxn5.onrender.com/v1/api/posts/create',
+        "https://blogify-backend-sxn5.onrender.com/v1/api/posts/create",
         {
           title,
           content, // Send HTML content from Editor
@@ -61,16 +61,16 @@ const CreateBlog = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
-      console.log('Blog Created:', response.data);
-      alert('Blog post created successfully!');
-      navigate('/author/dashboard');
+      console.log("Blog Created:", response.data);
+      alert("Blog post created successfully!");
+      navigate("/author/dashboard");
     } catch (err) {
-      console.error('Error creating blog:', err.response?.data || err.message);
-      setError(err.response?.data?.message || 'Failed to create blog post.');
+      console.error("Error creating blog:", err.response?.data || err.message);
+      setError(err.response?.data?.message || "Failed to create blog post.");
     } finally {
       setLoading(false);
     }
@@ -109,7 +109,10 @@ const CreateBlog = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title */}
             <motion.div variants={itemVariants}>
-              <label htmlFor="title" className="block text-lg font-semibold text-gray-800 mb-2">
+              <label
+                htmlFor="title"
+                className="block text-lg font-semibold text-gray-800 mb-2"
+              >
                 Title
               </label>
               <input
@@ -125,13 +128,16 @@ const CreateBlog = () => {
 
             {/* Content (PrimeReact Editor) */}
             <motion.div variants={itemVariants}>
-              <label htmlFor="content" className="block text-lg font-semibold text-gray-800 mb-2">
+              <label
+                htmlFor="content"
+                className="block text-lg font-semibold text-gray-800 mb-2"
+              >
                 Content
               </label>
               <Editor
                 value={content}
-                onTextChange={(e) => setContent(e.htmlValue || '')} // Store HTML content
-                style={{ height: '320px' }}
+                onTextChange={(e) => setContent(e.htmlValue || "")} // Store HTML content
+                style={{ height: "320px" }}
                 className="w-full border border-gray-300 rounded-lg"
                 placeholder="Write your blog content here..."
               />
@@ -139,7 +145,10 @@ const CreateBlog = () => {
 
             {/* Featured Image */}
             <motion.div variants={itemVariants}>
-              <label htmlFor="featuredImg" className="block text-lg font-semibold text-gray-800 mb-2">
+              <label
+                htmlFor="featuredImg"
+                className="block text-lg font-semibold text-gray-800 mb-2"
+              >
                 Featured Image URL (Optional)
               </label>
               <input
@@ -154,7 +163,10 @@ const CreateBlog = () => {
 
             {/* Status */}
             <motion.div variants={itemVariants}>
-              <label htmlFor="status" className="block text-lg font-semibold text-gray-800 mb-2">
+              <label
+                htmlFor="status"
+                className="block text-lg font-semibold text-gray-800 mb-2"
+              >
                 Status
               </label>
               <select
@@ -174,10 +186,12 @@ const CreateBlog = () => {
                 type="submit"
                 disabled={loading}
                 className={`w-full py-3 rounded-lg text-white transition ${
-                  loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+                  loading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-blue-500 hover:bg-blue-600"
                 }`}
               >
-                {loading ? 'Creating...' : 'Create Blog Post'}
+                {loading ? "Creating..." : "Create Blog Post"}
               </button>
             </motion.div>
           </form>
