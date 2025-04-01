@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { Editor } from "primereact/editor";
 // Animation Variants
 const containerVariants = {
   hidden: { opacity: 0, y: 50 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, ease: 'easeOut', staggerChildren: 0.2 },
+    transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.2 },
   },
 };
 
@@ -21,20 +22,20 @@ const itemVariants = {
 const UpdateBlog = () => {
   const navigate = useNavigate();
   const { postId } = useParams(); // Get postId from URL
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [featuredImg, setFeaturedImg] = useState('');
-  const [status, setStatus] = useState('draft');
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [featuredImg, setFeaturedImg] = useState("");
+  const [status, setStatus] = useState("draft");
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchPost = async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        alert('You must be logged in to edit a blog post.');
-        navigate('/login');
+        alert("You must be logged in to edit a blog post.");
+        navigate("/login");
         return;
       }
 
@@ -45,16 +46,21 @@ const UpdateBlog = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        console.log('Fetched Post:', response.data);
+        console.log("Fetched Post:", response.data);
         const post = response.data.post; // Assuming { success: true, post: {...} }
         setTitle(post.title);
         setContent(post.content);
-        setFeaturedImg(post.featuredImg || '');
+        setFeaturedImg(post.featuredImg || "");
         setStatus(post.status);
         setLoading(false);
       } catch (err) {
-        console.error('Error fetching post:', err.response?.data || err.message);
-        setError('Failed to load blog post. It may not exist or you lack permission.');
+        console.error(
+          "Error fetching post:",
+          err.response?.data || err.message
+        );
+        setError(
+          "Failed to load blog post. It may not exist or you lack permission."
+        );
         setLoading(false);
       }
     };
@@ -65,10 +71,10 @@ const UpdateBlog = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      alert('You must be logged in to update a blog post.');
-      navigate('/login');
+      alert("You must be logged in to update a blog post.");
+      navigate("/login");
       return;
     }
 
@@ -87,23 +93,25 @@ const UpdateBlog = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
-      console.log('Blog Updated:', response.data);
-      alert('Blog post updated successfully!');
-      navigate('/author/dashboard');
+      console.log("Blog Updated:", response.data);
+      alert("Blog post updated successfully!");
+      navigate("/author/dashboard");
     } catch (err) {
-      console.error('Error updating blog:', err.response?.data || err.message);
-      setError(err.response?.data?.message || 'Failed to update blog post.');
+      console.error("Error updating blog:", err.response?.data || err.message);
+      setError(err.response?.data?.message || "Failed to update blog post.");
     } finally {
       setSubmitLoading(false);
     }
   };
 
-  if (loading) return <div className="text-center py-8 text-gray-600">Loading...</div>;
-  if (error) return <div className="text-center py-8 text-red-500">{error}</div>;
+  if (loading)
+    return <div className="text-center py-8 text-gray-600">Loading...</div>;
+  if (error)
+    return <div className="text-center py-8 text-red-500">{error}</div>;
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
@@ -138,7 +146,10 @@ const UpdateBlog = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title */}
             <motion.div variants={itemVariants}>
-              <label htmlFor="title" className="block text-lg font-semibold text-gray-800 mb-2">
+              <label
+                htmlFor="title"
+                className="block text-lg font-semibold text-gray-800 mb-2"
+              >
                 Title
               </label>
               <input
@@ -154,22 +165,27 @@ const UpdateBlog = () => {
 
             {/* Content */}
             <motion.div variants={itemVariants}>
-              <label htmlFor="content" className="block text-lg font-semibold text-gray-800 mb-2">
+              <label
+                htmlFor="content"
+                className="block text-lg font-semibold text-gray-800 mb-2"
+              >
                 Content
               </label>
-              <textarea
-                id="content"
+              <Editor
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-40"
+                onTextChange={(e) => setContent(e.htmlValue || "")} // Store HTML content
+                style={{ height: "320px" }}
+                className="w-full border border-gray-300 rounded-lg"
                 placeholder="Write your blog content here..."
-                required
               />
             </motion.div>
 
             {/* Featured Image */}
             <motion.div variants={itemVariants}>
-              <label htmlFor="featuredImg" className="block text-lg font-semibold text-gray-800 mb-2">
+              <label
+                htmlFor="featuredImg"
+                className="block text-lg font-semibold text-gray-800 mb-2"
+              >
                 Featured Image URL (Optional)
               </label>
               <input
@@ -184,7 +200,10 @@ const UpdateBlog = () => {
 
             {/* Status */}
             <motion.div variants={itemVariants}>
-              <label htmlFor="status" className="block text-lg font-semibold text-gray-800 mb-2">
+              <label
+                htmlFor="status"
+                className="block text-lg font-semibold text-gray-800 mb-2"
+              >
                 Status
               </label>
               <select
@@ -204,10 +223,12 @@ const UpdateBlog = () => {
                 type="submit"
                 disabled={submitLoading}
                 className={`w-full py-3 rounded-lg text-white transition ${
-                  submitLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+                  submitLoading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-blue-500 hover:bg-blue-600"
                 }`}
               >
-                {submitLoading ? 'Updating...' : 'Update Blog Post'}
+                {submitLoading ? "Updating..." : "Update Blog Post"}
               </button>
             </motion.div>
           </form>
