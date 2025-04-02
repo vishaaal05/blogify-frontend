@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 const LoginPage = () => {
-
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -24,21 +23,24 @@ const LoginPage = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
-  
+
     try {
       const response = await axios.post(
         "https://blogify-backend-sxn5.onrender.com/v1/api/users/login",
         formData,
         { withCredentials: true } // Ensure cookies are sent with the request
       );
-  
       console.log("Login successful:", response.data);
-  
-      // Redirect user after successful login
-      navigate("/user/dashboard"); // Change route as needed
+
+      // Check if token is available in cookies
+      console.log("Stored Cookies:", document.cookie);
+
+      // Debugging navigation issue
+      console.log("Navigating to /user/dashboard...");
+      navigate("/user/dashboard"); // Ensure this is correct
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Login failed!";
-      
+
       // Show alert for wrong username/password
       alert(errorMessage);
       setError(errorMessage);
@@ -51,7 +53,6 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
-  
 
   // Animation variants for Framer Motion
   const containerVariants = {
