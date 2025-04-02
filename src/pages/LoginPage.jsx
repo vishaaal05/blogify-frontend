@@ -24,20 +24,18 @@ const LoginPage = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
+  
     try {
       const response = await axios.post(
         "https://blogify-backend-sxn5.onrender.com/v1/api/users/login",
-        formData
+        formData,
+        { withCredentials: true } // Ensure cookies are sent with the request
       );
-
+  
       console.log("Login successful:", response.data);
-
-      // Store token in localStorage
-      localStorage.setItem("token", response.data.token);
-
+  
       // Redirect user after successful login
-      navigate('/user/dashboard'); // Change route as needed
+      navigate("/user/dashboard"); // Change route as needed
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Login failed!";
       
@@ -53,6 +51,7 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
+  
 
   // Animation variants for Framer Motion
   const containerVariants = {
