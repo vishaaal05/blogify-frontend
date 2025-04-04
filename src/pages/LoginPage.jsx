@@ -5,6 +5,7 @@ import Button from "../components/Button";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
 const LoginPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -28,27 +29,36 @@ const LoginPage = () => {
       const response = await axios.post(
         "https://blogify-backend-sxn5.onrender.com/v1/api/users/login",
         formData,
-        { withCredentials: true } // Ensure cookies are sent with the request
+        { withCredentials: true }
       );
+
+      // Wait a bit to ensure cookie is set
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Verify token is in cookies
+      const token = document.cookie
+        .split(";")
+        .find((c) => c.trim().startsWith("token="));
+
+      if (!token) {
+        throw new Error("No token received");
+      }
+
       console.log("Login successful:", response.data);
+      console.log("Token received:", token);
 
-      // Check if token is available in cookies
-      console.log("Stored Cookies:", document.cookie);
-
-      // Debugging navigation issue
-      console.log("Navigating to /user/dashboard...");
-      navigate("/user/dashboard"); // Ensure this is correct
+      // Use replace instead of push to prevent going back to login
+      await navigate("/user/dashboard", { replace: true });
     } catch (err) {
-      const errorMessage = err.response?.data?.message || "Login failed!";
-
-      // Show alert for wrong username/password
-      alert(errorMessage);
+      const errorMessage =
+        err.response?.data?.message || err.message || "Login failed!";
+      console.error("Login error:", err);
       setError(errorMessage);
+      alert(errorMessage);
       setFormData({
         email: "",
         password: "",
       });
-      console.error("Login error:", err);
     } finally {
       setLoading(false);
     }
