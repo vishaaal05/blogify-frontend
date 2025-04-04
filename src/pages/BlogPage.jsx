@@ -4,7 +4,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { Header } from "../components/Header";
 
-// Animation Variants
+// Animation Variants remain unchanged
 const containerVariants = {
   hidden: { opacity: 0, y: 50 },
   visible: {
@@ -32,7 +32,7 @@ const BlogPage = () => {
   const [error, setError] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
-  const [newComment, setNewComment] = useState(""); // State for new comment input
+  const [newComment, setNewComment] = useState("");
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -48,6 +48,10 @@ const BlogPage = () => {
           const userId = JSON.parse(atob(token.split(".")[1])).id;
           setIsLiked(
             response.data.post.likes.some((like) => like.userId === userId)
+          );
+          // Check if post is favorited by user (assuming favorites is returned in post data)
+          setIsFavorited(
+            response.data.post.favorites?.some((fav) => fav.userId === userId) || false
           );
         }
       } catch (err) {
@@ -102,7 +106,7 @@ const BlogPage = () => {
     }
   };
 
-  const handleFavoriteToggle = () => {
+  const handleFavoriteToggle = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       alert("You are not logged in. Please log in to favorite this post.");
@@ -110,8 +114,31 @@ const BlogPage = () => {
       return;
     }
 
-    setIsFavorited(!isFavorited);
-    alert(isFavorited ? "Removed from favorites!" : "Added to favorites!");
+    try {
+      const response = await axios.post(
+        "https://blogify-backend-sxn5.onrender.com/v1/api/favorites/toggle",
+        { postId: id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setIsFavorited(!isFavorited);
+      alert(isFavorited ? "Removed from favorites!" : "Added to favorites!");
+
+      // Update post state if favorites data is returned
+      if (response.data.favorites) {
+        setPost((prevPost) => ({
+          ...prevPost,
+          favorites: response.data.favorites,
+        }));
+      }
+    } catch (err) {
+      console.error(
+        "Error toggling favorite:",
+        err.response?.data || err.message
+      );
+      alert("Failed to toggle favorite.");
+      setIsFavorited(isFavorited); // Revert state on error
+    }
   };
 
   const handleCommentSubmit = async (e) => {
@@ -246,7 +273,7 @@ const BlogPage = () => {
           <motion.div
             className="prose prose-lg text-gray-700 mb-10 border-l-4 border-red-500 pl-4 text-left"
             variants={itemVariants}
-            dangerouslySetInnerHTML={{ __html: post.content }} // Updated to render HTML
+            dangerouslySetInnerHTML={{ __html: post.content }}
           />
 
           <motion.div variants={itemVariants}>
