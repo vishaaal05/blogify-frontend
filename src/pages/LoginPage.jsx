@@ -32,23 +32,19 @@ const LoginPage = () => {
         { withCredentials: true }
       );
 
-      // Wait a bit to ensure cookie is set
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      // Verify token is in cookies
-      const token = document.cookie
-        .split(";")
-        .find((c) => c.trim().startsWith("token="));
-
-      if (!token) {
-        throw new Error("No token received");
+      // Check if we have token in the response
+      if (!response.data.token) {
+        throw new Error("No token in response");
       }
 
-      console.log("Login successful:", response.data);
-      console.log("Token received:", token);
+      // Store token in cookie manually if needed
+      document.cookie = `token=${response.data.token}; path=/`;
 
-      // Use replace instead of push to prevent going back to login
-      await navigate("/user/dashboard", { replace: true });
+      console.log("Login successful:", response.data);
+      
+      // Navigate immediately after setting cookie
+      navigate("/user/dashboard", { replace: true });
+
     } catch (err) {
       const errorMessage =
         err.response?.data?.message || err.message || "Login failed!";
