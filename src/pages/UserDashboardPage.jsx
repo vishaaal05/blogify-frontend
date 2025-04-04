@@ -31,7 +31,7 @@ const UserDashboard = () => {
   const [likedPosts, setLikedPosts] = useState([]);
   const [favoritedPosts, setFavoritedPosts] = useState([]);
   const [commentedPosts, setCommentedPosts] = useState([]);
-  const [userPosts, setUserPosts] = useState([]); // New state for user's posts
+  const [userPosts, setUserPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -49,7 +49,7 @@ const UserDashboard = () => {
         console.log('Decoded Token:', decoded);
         setUser(decoded);
 
-        // Fetch all posts for liked and commented filtering
+        // Fetch all posts for liked, commented, and favorited filtering
         const postsResponse = await axios.get('https://blogify-backend-sxn5.onrender.com/v1/api/posts', {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -67,18 +67,19 @@ const UserDashboard = () => {
         );
         setLikedPosts(liked);
 
+        // Filter favorited posts
+        const favorited = allPosts.filter((post) =>
+          post.favoritedBy && Array.isArray(post.favoritedBy) && post.favoritedBy.some((fav) => fav.userId === decoded.id)
+        );
+        setFavoritedPosts(favorited);
+
         // Filter commented posts
         const commented = allPosts.filter((post) =>
           post.comments && Array.isArray(post.comments) && post.comments.some((comment) => comment.userId === decoded.id)
         );
         setCommentedPosts(commented);
 
-        // Load favorited posts from localStorage
-        const storedFavorites = JSON.parse(localStorage.getItem('favoritedPosts') || '[]');
-        const favorited = allPosts.filter((post) => storedFavorites.includes(post.id));
-        setFavoritedPosts(favorited);
-
-        // Fetch user's own posts to check author status
+        // Fetch user's own posts
         const authorResponse = await axios.get(
           `https://blogify-backend-sxn5.onrender.com/v1/api/posts/author/${decoded.id}`,
           {
@@ -107,12 +108,11 @@ const UserDashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('favoritedPosts');
     navigate('/login');
   };
 
   const renderPostSection = (title, posts) => (
-    <motion.div variants={itemVariants}>
+    <motion.div variants={itemVariants} className="mt-8">
       <h2 className="text-2xl font-semibold text-gray-800 mb-4">{title}</h2>
       {posts.length === 0 ? (
         <p className="text-gray-600">No posts in this category yet.</p>
@@ -214,6 +214,7 @@ const UserDashboard = () => {
             </motion.div>
           </motion.div>
 
+          {renderPostSection('Your Posts', userPosts)}
           {renderPostSection('Liked Posts', likedPosts)}
           {renderPostSection('Favorited Posts', favoritedPosts)}
           {renderPostSection('Commented Posts', commentedPosts)}
@@ -235,7 +236,12 @@ const UserDashboard = () => {
                   Go to Author Dashboard
                 </Link>
               ) : (
-                <Link to='/create/post' className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">Become an Author</Link>
+                <Link
+                  to="/create/post"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                >
+                  Become an Author
+                </Link>
               )}
             </div>
           </motion.div>
