@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Header } from '../components/Header';
+import Cookies from 'js-cookie';
 
 // Animation Variants
 const containerVariants = {
@@ -37,7 +38,7 @@ const UserDashboard = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const token = localStorage.getItem('token');
+      const token = Cookies.get('token');
       if (!token) {
         navigate('/login');
         return;
@@ -97,7 +98,7 @@ const UserDashboard = () => {
       } catch (err) {
         console.error('Error:', err.response?.data || err.message);
         setError('Failed to load dashboard. Please log in again.');
-        localStorage.removeItem('token');
+        Cookies.remove('token');
         navigate('/login');
       }
     };
@@ -106,7 +107,7 @@ const UserDashboard = () => {
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    Cookies.remove('token');
     localStorage.removeItem('favoritedPosts');
     navigate('/login');
   };
