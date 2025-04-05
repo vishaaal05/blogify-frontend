@@ -6,6 +6,28 @@ import { Header } from "../components/Header";
 import Loader from "../components/Loader";
 import { FaHeart, FaRegHeart, FaStar, FaRegStar } from "react-icons/fa";
 
+// Add this helper function before the BlogPage component
+const formatCommentTime = (timestamp) => {
+  const commentDate = new Date(timestamp);
+  const now = new Date();
+  const diffInHours = (now - commentDate) / (1000 * 60 * 60);
+
+  if (diffInHours < 24) {
+    if (diffInHours < 1) {
+      const minutes = Math.floor(diffInHours * 60);
+      return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+    }
+    const hours = Math.floor(diffInHours);
+    return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+  }
+
+  return commentDate.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+};
+
 // Animation Variants remain unchanged
 const containerVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -162,22 +184,27 @@ const BlogPage = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
+      // Parse user data from token
+      const userData = JSON.parse(atob(token.split(".")[1]));
+      
       const newCommentData = {
         id: response.data.id || Date.now().toString(),
         content: newComment,
         createdAt: new Date().toISOString(),
+        user: {
+          id: userData.id,
+          name: userData.name,
+          email: userData.email
+        }
       };
 
       setPost((prevPost) => ({
         ...prevPost,
-        comments: [...prevPost.comments, newCommentData],
+        comments: [newCommentData, ...prevPost.comments],
       }));
       setNewComment("");
     } catch (err) {
-      console.error(
-        "Error posting comment:",
-        err.response?.data || err.message
-      );
+      console.error("Error posting comment:", err.response?.data || err.message);
       alert("Failed to post comment.");
     }
   };
@@ -304,22 +331,37 @@ const BlogPage = () => {
             </form>
 
             {post.comments.length > 0 ? (
-              post.comments.map((comment) => (
-                <motion.div
-                  key={comment.id}
-                  className="bg-gray-50 p-4 rounded-lg shadow-sm mb-4 flex flex-col"
-                  variants={commentVariants}
-                  whileHover={{ scale: 1.01 }}
-                  transition={{ type: "spring", stiffness: 200 }}
-                >
-                  <p className="text-gray-700">{comment.content}</p>
-                  <p className="text-gray-500 text-sm mt-2">
-                    Posted on {new Date(comment.createdAt).toLocaleDateString()}
-                  </p>
-                </motion.div>
-              ))
+              [...post.comments]
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .map((comment) => (
+                  <motion.div
+                    key={comment.id}
+                    className="bg-gray-50 p-4 rounded-lg shadow-sm mb-4 flex gap-4"
+                    variants={commentVariants}
+                    whileHover={{ scale: 1.01 }}
+                    transition={{ type: "spring", stiffness: 200 }}
+                  >
+                    {/* User Avatar */}
+                    <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center text-white font-semibold text-lg">
+                      {comment.user?.name?.charAt(0).toUpperCase() || '?'}
+                    </div>
+
+                    {/* Comment Content */}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium text-gray-900">
+                          {comment.user?.name || 'Anonymous'}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {formatCommentTime(comment.createdAt)}
+                        </span>
+                      </div>
+                      <p className="text-gray-700 text-sm">{comment.content}</p>
+                    </div>
+                  </motion.div>
+                ))
             ) : (
-              <p className="text-gray-600">
+              <p className="text-gray-600 text-center py-8">
                 No comments yet. Be the first to comment!
               </p>
             )}
