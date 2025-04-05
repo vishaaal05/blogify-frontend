@@ -102,7 +102,7 @@ export const Header = () => {
         animate={menuOpen ? { height: 'auto', opacity: 1 } : { height: 0, opacity: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <nav className="mt-4 flex flex-col gap-4">
+        <nav className="mt-4 flex flex-col gap-4 pb-4">
           <Link to="/home" onClick={closeMenu} className="text-gray-600 hover:text-red-500 hover:underline">
             Home
           </Link>
@@ -119,7 +119,7 @@ export const Header = () => {
           {isLoggedIn ? (
             <button
               onClick={handleLogout}
-              className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition"
+              className="w-full text-center px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition mt-2"
             >
               Logout
             </button>
@@ -127,7 +127,7 @@ export const Header = () => {
             <Link
               to="/login"
               onClick={closeMenu}
-              className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition"
+              className="w-full text-center px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition mt-2"
             >
               Login
             </Link>
