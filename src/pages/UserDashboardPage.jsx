@@ -118,10 +118,10 @@ const UserDashboard = () => {
     fetchUserData();
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
-  };
+  // const handleLogout = () => {
+  //   localStorage.removeItem("token");
+  //   navigate("/login");
+  // };
 
   const renderPostSection = (title, posts) => (
     <motion.div variants={itemVariants} className="mt-8">
@@ -201,12 +201,12 @@ const UserDashboard = () => {
             <h1 className="text-4xl md:text-5xl font-bold text-gray-800">
               Welcome, {user?.email || "User"}!
             </h1>
-            <button
+            {/* <button
               onClick={handleLogout}
               className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
             >
               Logout
-            </button>
+            </button> */}
           </motion.div>
 
           <motion.div
