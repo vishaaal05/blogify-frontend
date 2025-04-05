@@ -24,7 +24,7 @@ function App() {
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/author/dashboard" element={<AuthorDashboardPage />} />
-          <Route path="/blogs" element={<BlogsPage />}></Route>
+          <Route path="/blog" element={<BlogsPage />}></Route>
           <Route path="/create/post" element={<CreateBlog/>}></Route>
           <Route path="/update/post/:postId" element={<UpdateBlog/>}></Route>
 
