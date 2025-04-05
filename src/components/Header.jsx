@@ -1,83 +1,73 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react"; // install lucide-react for icons
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export const Header = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const hideLogin =
-    location.pathname === "/login" ||
-    location.pathname === "/signup" ||
-    location.pathname === "/author/dashboard" ||
-    location.pathname === "/user/dashboard";
+  // Check login status on mount
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    navigate("/login");
+  };
 
   return (
-    <header className="bg-white shadow-sm px-4 py-3">
-      <div className="flex justify-between items-center">
-        {/* Logo */}
-        <div className="text-2xl font-bold text-red-500">
-          <Link to="/home">Blogify</Link>
-        </div>
-
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center space-x-6">
-          <Link to="/home" className="text-gray-600 hover:text-red-500 hover:underline">
-            Home
-          </Link>
-          <Link to="/blogs" className="text-gray-600 hover:text-red-500 hover:underline">
-            Blog
-          </Link>
-          <Link to="/Contactus" className="text-gray-600 hover:text-red-500 hover:underline">
-            Reach us
-          </Link>
-          <Link to="/about" className="text-gray-600 hover:text-red-500 hover:underline">
-            About
-          </Link>
-          {!hideLogin && (
-            <Link
-              to="/login"
-              className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition"
-            >
-              Login
-            </Link>
-          )}
-        </nav>
-
-        {/* Mobile menu toggle */}
-        <div className="md:hidden">
-          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
+    <header className="flex flex-col sm:flex-row justify-between items-center py-4 px-6 bg-white shadow-sm">
+      <div className="text-2xl font-bold text-red-500 mb-2 sm:mb-0">
+        <Link to="/home">Blogify</Link>
       </div>
 
-      {/* Mobile nav */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden flex flex-col mt-3 space-y-2">
-          <Link to="/home" className="text-gray-600 hover:text-red-500" onClick={() => setIsMobileMenuOpen(false)}>
-            Home
+      <nav className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+        <Link
+          to="/home"
+          className="text-gray-600 hover:text-red-500 hover:underline"
+        >
+          Home
+        </Link>
+        <Link
+          to="/blogs"
+          className="text-gray-600 hover:text-red-500 hover:underline"
+        >
+          Blog
+        </Link>
+        <Link
+          to="/Contactus"
+          className="text-gray-600 hover:text-red-500 hover:underline"
+        >
+          Reach us
+        </Link>
+        <Link
+          to="/about"
+          className="text-gray-600 hover:text-red-500 hover:underline"
+        >
+          About
+        </Link>
+
+        {isLoggedIn ? (
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition"
+          >
+            Logout
+          </button>
+        ) : (
+          <Link
+            to="/login"
+            className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition"
+          >
+            Login
           </Link>
-          <Link to="/blogs" className="text-gray-600 hover:text-red-500" onClick={() => setIsMobileMenuOpen(false)}>
-            Blog
-          </Link>
-          <Link to="/Contactus" className="text-gray-600 hover:text-red-500" onClick={() => setIsMobileMenuOpen(false)}>
-            Reach us
-          </Link>
-          <Link to="/about" className="text-gray-600 hover:text-red-500" onClick={() => setIsMobileMenuOpen(false)}>
-            About
-          </Link>
-          {!hideLogin && (
-            <Link
-              to="/login"
-              className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition w-fit"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Login
-            </Link>
-          )}
-        </div>
-      )}
+        )}
+      </nav>
     </header>
   );
 };
