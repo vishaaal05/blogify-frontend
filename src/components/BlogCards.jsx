@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import Loader from "./Loader";
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -36,7 +37,11 @@ const BlogsPage = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center py-8">Loading posts...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader size="large" />
+      </div>
+    );
   }
 
   if (error) {

@@ -4,6 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { Header } from "../components/Header";
+import Loader from "../components/Loader";
 
 // Animation Variants
 const containerVariants = {
@@ -175,7 +176,11 @@ const UserDashboard = () => {
   );
 
   if (loading)
-    return <div className="text-center py-8 text-gray-600">Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Loader size="large" />
+      </div>
+    );
   if (error)
     return <div className="text-center py-8 text-red-500">{error}</div>;
 

@@ -61,7 +61,7 @@ export const Header = () => {
           {isLoggedIn ? (
             <button
               onClick={handleLogout}
-              className="px-4 py-2 bg-gray-200 text-red-500 rounded-full hover:bg-gray-300 transition"
+              className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition"
             >
               Logout
             </button>
@@ -95,7 +95,7 @@ export const Header = () => {
           {isLoggedIn ? (
             <button
               onClick={handleLogout}
-              className="px-4 py-2 bg-gray-200 text-red-500 rounded-full hover:bg-gray-300 transition"
+              className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition"
             >
               Logout
             </button>
