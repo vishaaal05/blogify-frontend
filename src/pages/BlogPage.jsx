@@ -4,6 +4,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { Header } from "../components/Header";
 import Loader from "../components/Loader";
+import { FaHeart, FaRegHeart, FaStar, FaRegStar } from "react-icons/fa";
 
 // Animation Variants remain unchanged
 const containerVariants = {
@@ -50,7 +51,6 @@ const BlogPage = () => {
           setIsLiked(
             response.data.post.likes.some((like) => like.userId === userId)
           );
-          // Check if post is favorited by user (assuming favorites is returned in post data)
           setIsFavorited(
             response.data.post.favorites?.some((fav) => fav.userId === userId) || false
           );
@@ -125,7 +125,6 @@ const BlogPage = () => {
       setIsFavorited(!isFavorited);
       alert(isFavorited ? "Removed from favorites!" : "Added to favorites!");
 
-      // Update post state if favorites data is returned
       if (response.data.favorites) {
         setPost((prevPost) => ({
           ...prevPost,
@@ -138,7 +137,7 @@ const BlogPage = () => {
         err.response?.data || err.message
       );
       alert("Failed to toggle favorite.");
-      setIsFavorited(isFavorited); // Revert state on error
+      setIsFavorited(isFavorited);
     }
   };
 
@@ -198,7 +197,7 @@ const BlogPage = () => {
     <div className="min-h-screen bg-gray-50 font-sans">
       <Header />
       <motion.section
-        className="relative py-16 px-6 bg-gradient-to-r from-pink-100 to-white flex flex-col items-center"
+        className="relative py-8 md:py-16 px-4 md:px-6 bg-gradient-to-r from-pink-100 to-white flex flex-col items-center"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -206,7 +205,7 @@ const BlogPage = () => {
         <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-pink-200 rounded-bl-full opacity-50 z-0"></div>
 
         <motion.div
-          className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl z-10"
+          className="bg-white p-4 md:p-8 rounded-lg shadow-lg w-full max-w-4xl z-10"
           variants={itemVariants}
         >
           <motion.img
@@ -215,68 +214,70 @@ const BlogPage = () => {
               "https://via.placeholder.com/800x400?text=No+Image"
             }
             alt={post.title}
-            className="w-full h-80 object-cover rounded-lg mb-6"
+            className="w-full h-48 md:h-80 object-cover rounded-lg mb-4 md:mb-6"
             variants={itemVariants}
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300 }}
           />
 
           <motion.h1
-            className="text-4xl md:text-5xl font-bold text-gray-800 mb-4 text-center"
+            className="text-2xl md:text-5xl font-bold text-gray-800 mb-3 md:mb-4 text-center"
             variants={itemVariants}
           >
             {post.title}
           </motion.h1>
 
           <motion.div
-            className="flex flex-col md:flex-row items-center justify-between text-gray-600 mb-8"
+            className="flex flex-col md:flex-row items-center justify-between text-gray-600 mb-4 md:mb-8 space-y-2 md:space-y-0"
             variants={itemVariants}
           >
-            <p className="text-lg">
+            <p className="text-base md:text-lg">
               By{" "}
               <span className="font-semibold text-red-500">
                 {post.author?.name || "Unknown Author"}
               </span>
             </p>
-            <div className="flex flex-wrap gap-4 mt-2 md:mt-0 text-sm">
-              <span className="bg-gray-100 px-2 py-1 rounded">
+            <div className="flex flex-wrap justify-center md:justify-end gap-2 md:gap-4 text-sm">
+              <span className="bg-gray-100 px-2 py-1 rounded text-xs md:text-sm">
                 {new Date(post.createdAt).toLocaleDateString()}
               </span>
-              <span className="bg-gray-100 px-2 py-1 rounded">
+              <span className="bg-gray-100 px-2 py-1 rounded text-xs md:text-sm">
                 {post.readingTime ? `${post.readingTime} min read` : "N/A"}
               </span>
-              <span className="bg-gray-100 px-2 py-1 rounded">
+              <span className="bg-gray-100 px-2 py-1 rounded text-xs md:text-sm">
                 {post.views} views
               </span>
-              <span className="bg-gray-100 px-2 py-1 rounded">
+              <span className="bg-gray-100 px-2 py-1 rounded text-xs md:text-sm">
                 {post.likes.length} likes
               </span>
             </div>
           </motion.div>
 
-          <motion.div className="flex gap-4 mb-6" variants={itemVariants}>
+          <motion.div className="flex justify-center md:justify-start gap-4 mb-6" variants={itemVariants}>
             <button
               onClick={handleLikeToggle}
-              className={`px-4 py-2 rounded-lg transition ${
-                isLiked ? "bg-red-500 text-white" : "bg-gray-200 text-gray-800"
-              } hover:bg-red-600 hover:text-white`}
+              className={`p-3 rounded-full transition-all duration-300 ${
+                isLiked 
+                ? "bg-red-500 text-white hover:bg-red-600" 
+                : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+              }`}
             >
-              {isLiked ? "Unlike" : "Like"}
+              {isLiked ? <FaHeart size={20} /> : <FaRegHeart size={20} />}
             </button>
             <button
               onClick={handleFavoriteToggle}
-              className={`px-4 py-2 rounded-lg transition ${
+              className={`p-3 rounded-full transition-all duration-300 ${
                 isFavorited
-                  ? "bg-yellow-500 text-white"
-                  : "bg-gray-200 text-gray-800"
-              } hover:bg-yellow-600 hover:text-white`}
+                ? "bg-yellow-500 text-white hover:bg-yellow-600"
+                : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+              }`}
             >
-              {isFavorited ? "Unfavorite" : "Favorite"}
+              {isFavorited ? <FaStar size={20} /> : <FaRegStar size={20} />}
             </button>
           </motion.div>
 
           <motion.div
-            className="prose prose-lg text-gray-700 mb-10 border-l-4 border-red-500 pl-4 text-left"
+            className="prose prose-sm md:prose-lg max-w-none text-gray-700 mb-6 md:mb-10 border-l-4 border-red-500 pl-4 text-left"
             variants={itemVariants}
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
