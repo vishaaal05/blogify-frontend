@@ -13,8 +13,7 @@ const BlogsPage = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -49,51 +48,61 @@ const BlogsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-16 px-4 sm:px-6 lg:px-8">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
+        className="max-w-7xl mx-auto"
       >
-        {/* <h1 className="text-4xl font-bold text-gray-800 text-center mb-12">
-          Our Blogs
-        </h1> */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
           {posts.map((post) => (
             <Link to={`/blog/${post.id}`} key={post.id}>
               <motion.div
-                className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer"
+                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl"
                 variants={itemVariants}
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 300 }}
+                whileHover={{ y: -5 }}
+                layout
               >
-                <img
-                  src={
-                    post.featuredImg ||
-                    "https://via.placeholder.com/300x200?text=No+Image"
-                  }
-                  alt={post.title}
-                  className="w-full h-40 object-cover"
-                />
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-800">
+                <div className="relative h-48">
+                  <img
+                    src={post.featuredImg || "https://via.placeholder.com/300x200?text=No+Image"}
+                    alt={post.title}
+                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                    <p className="text-white text-sm font-medium">
+                      {new Date(post.createdAt).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </p>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">
                     {post.title}
                   </h3>
-                  <p className="text-gray-600 text-sm">
-                    Author: {post.author.name}
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                    {post.excerpt || post.content?.substring(0, 120) + "..."}
                   </p>
-                  <div className="flex items-center mt-2">
-                    {/* <span className="text-yellow-500">★★★★☆</span> */}
-                    <span className="text-yellow-500">{post.likes.userId}</span>
-                    <span className="ml-2 text-gray-600 text-sm">
-                      {post.readingTime
-                        ? `${post.readingTime} min read`
-                        : "N/A"}
-                    </span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <img
+                        src={post.author?.avatar || "https://avatar.iran.liara.run/public/boy"}
+                        alt={post.author?.name}
+                        className="w-8 h-8 rounded-full"
+                      />
+                      <span className="text-sm font-medium text-gray-700">
+                        {post.author?.name}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                      <span>♥ {post.likes?.length || 0}</span>
+                      <span>👁 {post.views || 0}</span>
+                    </div>
                   </div>
-                  <p className="text-gray-500 text-sm mt-1">
-                    {post.views} views
-                  </p>
                 </div>
               </motion.div>
             </Link>
