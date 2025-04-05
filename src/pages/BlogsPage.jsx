@@ -5,7 +5,10 @@ import BlogCards from "../components/BlogCards";
 const BlogsPage = () => {
   return <div>
     <Header/>
+    <div className="py-10">
     <BlogCards/>
+    </div>
+  
   </div>;
 };
 
