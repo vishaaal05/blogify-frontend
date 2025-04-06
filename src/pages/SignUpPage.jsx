@@ -5,12 +5,11 @@ import { Header } from "../components/Header";
 import Button from "../components/Button";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -23,8 +22,6 @@ const SignUpPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
     setLoading(true);
 
     try {
@@ -32,12 +29,20 @@ const SignUpPage = () => {
         "https://blogify-backend-sxn5.onrender.com/v1/api/users/register",
         formData
       );
-      alert("Registered successfully!");
-      setSuccess("User registered successfully!");
+      toast.success("Welcome aboard! Registration successful!", {
+        duration: 3000,
+        position: "top-center",
+      });
       setFormData({ name: "", email: "", password: "" });
-      navigate("/login");
+      setTimeout(() => navigate("/login"), 1500); // Smooth redirect after toast
     } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong!");
+      toast.error(
+        err.response?.data?.message || "Oops! Something went wrong.",
+        {
+          duration: 4000,
+          position: "top-center",
+        }
+      );
     } finally {
       setLoading(false);
     }
@@ -45,83 +50,66 @@ const SignUpPage = () => {
 
   // Animation variants
   const containerVariants = {
-    hidden: { opacity: 0, y: 50 },
+    hidden: { opacity: 0, scale: 0.9 },
     visible: {
       opacity: 1,
-      y: 0,
+      scale: 1,
       transition: {
         duration: 0.8,
         ease: "easeOut",
-        staggerChildren: 0.3,
+        staggerChildren: 0.2,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.5 },
+      transition: { duration: 0.6, ease: "easeOut" },
     },
   };
 
   const inputVariants = {
-    hover: { scale: 1.02 },
+    hover: { scale: 1.03, boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.1)" },
     focus: {
-      scale: 1.02,
-      borderColor: "#ef4444",
-      transition: { duration: 0.2 },
+      scale: 1.03,
+      borderColor: "#f43f5e",
+      boxShadow: "0px 0px 8px rgba(244, 63, 94, 0.5)",
+      transition: { duration: 0.3 },
     },
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
+    <div className="flex items-center justify-center min-h-screen p-4 font-sans bg-gradient-to-br from-rose-50 via-white to-pink-50">
       <Header />
       <motion.section
-        className="relative py-16 px-6 bg-gradient-to-r from-pink-100 to-white flex flex-col items-center"
+        className="relative z-10 w-full max-w-lg px-6 py-24"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
       >
-        {/* Background Decorative Shape */}
-        <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-pink-200 rounded-bl-full opacity-50"></div>
+        {/* Creative Background Shape */}
+        <div className="absolute inset-0 transform scale-125 rounded-full -z-10 bg-gradient-to-r from-rose-200 to-pink-300 blur-3xl opacity-40"></div>
 
         <motion.div
-          className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md z-10"
+          className="p-8 bg-white border shadow-xl rounded-2xl border-rose-100"
           variants={itemVariants}
         >
           <motion.h2
-            className="text-3xl font-bold text-gray-800 text-center mb-6"
+            className="mb-6 text-4xl font-extrabold text-center text-transparent text-gray-800 bg-gradient-to-r from-rose-500 to-pink-600 bg-clip-text"
             variants={itemVariants}
           >
-            Join the Journey
+            Start Your Adventure
           </motion.h2>
-
-          {error && (
-            <motion.p
-              className="text-red-500 text-center mb-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              {error}
-            </motion.p>
-          )}
-          {success && (
-            <motion.p
-              className="text-green-500 text-center mb-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              {success}
-            </motion.p>
-          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <motion.div variants={itemVariants}>
-              <label htmlFor="name" className="block text-gray-600 mb-2">
+              <label
+                htmlFor="name"
+                className="block mb-2 font-medium text-gray-700"
+              >
                 Full Name
               </label>
               <motion.input
@@ -130,8 +118,8 @@ const SignUpPage = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 transition"
-                placeholder="Enter your name"
+                className="w-full px-4 py-3 text-gray-800 transition-all border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-0"
+                placeholder="Your Name"
                 required
                 variants={inputVariants}
                 whileHover="hover"
@@ -140,7 +128,10 @@ const SignUpPage = () => {
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <label htmlFor="email" className="block text-gray-600 mb-2">
+              <label
+                htmlFor="email"
+                className="block mb-2 font-medium text-gray-700"
+              >
                 Email Address
               </label>
               <motion.input
@@ -149,8 +140,8 @@ const SignUpPage = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 transition"
-                placeholder="Enter your email"
+                className="w-full px-4 py-3 text-gray-800 transition-all border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-0"
+                placeholder="you@example.com"
                 required
                 variants={inputVariants}
                 whileHover="hover"
@@ -159,7 +150,10 @@ const SignUpPage = () => {
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <label htmlFor="password" className="block text-gray-600 mb-2">
+              <label
+                htmlFor="password"
+                className="block mb-2 font-medium text-gray-700"
+              >
                 Password
               </label>
               <motion.input
@@ -168,8 +162,8 @@ const SignUpPage = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 transition"
-                placeholder="Enter your password"
+                className="w-full px-4 py-3 text-gray-800 transition-all border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-0"
+                placeholder="••••••••"
                 required
                 variants={inputVariants}
                 whileHover="hover"
@@ -179,24 +173,28 @@ const SignUpPage = () => {
 
             <motion.div
               variants={itemVariants}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.06 }}
+              whileTap={{ scale: 0.94 }}
             >
               <Button
-                label={loading ? "Signing up..." : "Sign up"}
+                label={loading ? "Creating Account..." : "Join Now"}
                 type="submit"
                 disabled={loading}
+                className="w-full py-3 font-semibold text-white transition-all rounded-lg bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700"
               />
             </motion.div>
           </form>
 
           <motion.p
-            className="text-center text-gray-600 mt-6"
+            className="mt-6 text-sm text-center text-gray-600"
             variants={itemVariants}
           >
-            Already have an account?{" "}
-            <Link to="/login" className="text-red-500 hover:underline">
-              Log in
+            Already part of the crew?{" "}
+            <Link
+              to="/login"
+              className="font-medium transition text-rose-500 hover:text-rose-600"
+            >
+              Log In
             </Link>
           </motion.p>
         </motion.div>
