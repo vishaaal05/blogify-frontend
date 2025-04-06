@@ -1,19 +1,17 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
+import axios from "axios";
 import { Header } from "../components/Header";
 import Button from "../components/Button";
-import { Link } from "react-router-dom";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-const LoginPage = () => {
+import { useNavigate, Link } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 
+const LoginPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -22,7 +20,6 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
@@ -30,134 +27,163 @@ const LoginPage = () => {
         "https://blogify-backend-sxn5.onrender.com/v1/api/users/login",
         formData
       );
-
-      console.log("Login successful:", response.data);
-
-      // Store token in localStorage
       localStorage.setItem("token", response.data.token);
-
-      // Redirect user after successful login
-      navigate('/user/dashboard'); // Change route as needed
+      toast.success("Welcome back! Login successful!", {
+        duration: 3000,
+        position: "top-center",
+        style: {
+          background: "#dcfce7",
+          color: "#166534",
+        },
+      });
+      setTimeout(() => navigate("/user/dashboard"), 1500); // Smooth redirect
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Login failed!";
-      
-      // Show alert for wrong username/password
-      alert(errorMessage);
-      setError(errorMessage);
-      setFormData({
-        email: "",
-        password: "",
+      toast.error(errorMessage, {
+        duration: 4000,
+        position: "top-center",
+        style: {
+          background: "#fee2e2",
+          color: "#dc2626",
+        },
       });
+      setFormData({ email: "", password: "" });
       console.error("Login error:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Animation variants for Framer Motion
+  // Animation variants
   const containerVariants = {
-    hidden: { opacity: 0, y: 50 },
+    hidden: { opacity: 0, scale: 0.9 },
     visible: {
       opacity: 1,
-      y: 0,
-      transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.3 },
+      scale: 1,
+      transition: {
+        duration: 0.8,
+        ease: "easeOut",
+        staggerChildren: 0.2,
+      },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+
+  const inputVariants = {
+    hover: { scale: 1.03, boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.1)" },
+    focus: {
+      scale: 1.03,
+      borderColor: "#f43f5e",
+      boxShadow: "0px 0px 8px rgba(244, 63, 94, 0.5)",
+      transition: { duration: 0.3 },
+    },
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
-      {/* Header */}
+    <div className="flex items-center justify-center min-h-screen p-4 font-sans bg-gradient-to-br from-rose-50 via-white to-pink-50">
       <Header />
-
-      {/* Login Section */}
+      <Toaster />
       <motion.section
-        className="relative py-16 px-6 bg-gradient-to-r from-pink-100 to-white flex flex-col items-center"
+        className="relative z-10 w-full max-w-lg px-6 py-12"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
       >
-        {/* Background Decorative Shape */}
-        <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-pink-200 rounded-bl-full opacity-50"></div>
+        {/* Creative Background Shape */}
+        <div className="absolute inset-0 transform scale-125 rounded-full -z-10 bg-gradient-to-r from-rose-200 to-pink-300 blur-3xl opacity-40"></div>
 
-        {/* Form Container */}
         <motion.div
-          className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md z-10"
+          className="p-8 bg-white border shadow-xl rounded-2xl border-rose-100"
           variants={itemVariants}
         >
-          <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">
+          <motion.h2
+            className="mb-6 text-4xl font-extrabold text-center text-transparent text-gray-800 bg-gradient-to-r from-rose-500 to-pink-600 bg-clip-text"
+            variants={itemVariants}
+          >
             Welcome Back
-          </h2>
+          </motion.h2>
+
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email Field */}
             <motion.div variants={itemVariants}>
-              <label htmlFor="email" className="block text-gray-600 mb-2">
+              <label
+                htmlFor="email"
+                className="block mb-2 font-medium text-gray-700"
+              >
                 Email Address
               </label>
-              <input
+              <motion.input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 transition"
-                placeholder="Enter your email"
+                className="w-full px-4 py-3 text-gray-800 transition-all border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-0"
+                placeholder="you@example.com"
                 required
+                disabled={loading}
+                variants={inputVariants}
+                whileHover="hover"
+                whileFocus="focus"
               />
             </motion.div>
 
-            {/* Password Field */}
             <motion.div variants={itemVariants}>
-              <label htmlFor="password" className="block text-gray-600 mb-2">
+              <label
+                htmlFor="password"
+                className="block mb-2 font-medium text-gray-700"
+              >
                 Password
               </label>
-              <input
+              <motion.input
                 type="password"
                 id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 transition"
-                placeholder="Enter your password"
+                className="w-full px-4 py-3 text-gray-800 transition-all border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-0"
+                placeholder="••••••••"
                 required
+                disabled={loading}
+                variants={inputVariants}
+                whileHover="hover"
+                whileFocus="focus"
               />
             </motion.div>
 
-            {/* Error Message */}
-            {error && (
-              <motion.p
-                className="text-red-500 text-center"
-                variants={itemVariants}
-              >
-                {error}
-              </motion.p>
-            )}
-
-            {/* Submit Button */}
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
               variants={itemVariants}
+              whileHover={{ scale: 1.06 }}
+              whileTap={{ scale: 0.94 }}
             >
               <Button
-                label={loading ? "Logging in..." : "Log In"}
+                label={loading ? "Logging In..." : "Log In"}
                 type="submit"
                 disabled={loading}
+                className="w-full py-3 font-semibold text-white transition-all rounded-lg bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700"
               />
             </motion.div>
           </form>
 
-          {/* Link to SignUp */}
-          <p className="text-center text-gray-600 mt-6">
-            Don’t have an account?{" "}
-            <Link to="/signup" className="text-red-500 hover:underline">
+          <motion.p
+            className="mt-6 text-sm text-center text-gray-600"
+            variants={itemVariants}
+          >
+            New to the journey?{" "}
+            <Link
+              to="/signup"
+              className="font-medium transition text-rose-500 hover:text-rose-600"
+            >
               Sign Up
             </Link>
-          </p>
+          </motion.p>
         </motion.div>
       </motion.section>
     </div>
