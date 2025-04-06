@@ -5,8 +5,9 @@ import { motion } from "framer-motion";
 import { Header } from "../components/Header";
 import Loader from "../components/Loader";
 import { FaHeart, FaRegHeart, FaStar, FaRegStar } from "react-icons/fa";
+import toast, { Toaster } from "react-hot-toast";
 
-// Add this helper function before the BlogPage component
+// Helper function for formatting comment timestamps
 const formatCommentTime = (timestamp) => {
   const commentDate = new Date(timestamp);
   const now = new Date();
@@ -15,32 +16,39 @@ const formatCommentTime = (timestamp) => {
   if (diffInHours < 24) {
     if (diffInHours < 1) {
       const minutes = Math.floor(diffInHours * 60);
-      return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+      return `${minutes} ${minutes === 1 ? "minute" : "minutes"} ago`;
     }
     const hours = Math.floor(diffInHours);
-    return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+    return `${hours} ${hours === 1 ? "hour" : "hours"} ago`;
   }
 
   return commentDate.toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
+    year: "numeric",
+    month: "short",
+    day: "numeric",
   });
 };
 
-// Animation Variants remain unchanged
+// Animation Variants
 const containerVariants = {
-  hidden: { opacity: 0, y: 50 },
+  hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.2 },
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+      staggerChildren: 0.1,
+    },
   },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
 };
 
 const commentVariants = {
@@ -53,7 +61,6 @@ const BlogPage = () => {
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
   const [newComment, setNewComment] = useState("");
@@ -74,23 +81,30 @@ const BlogPage = () => {
             response.data.post.likes.some((like) => like.userId === userId)
           );
           setIsFavorited(
-            response.data.post.favorites?.some((fav) => fav.userId === userId) || false
+            response.data.post.favorites?.some(
+              (fav) => fav.userId === userId
+            ) || false
           );
         }
       } catch (err) {
-        setError("Failed to fetch blog post");
+        toast.error("Failed to fetch blog post", {
+          duration: 4000,
+          position: "top-center",
+          style: { background: "#fee2e2", color: "#dc2626" },
+        });
         setLoading(false);
-        console.error("Error fetching post:", err);
       }
     };
-
     fetchPost();
   }, [id]);
 
   const handleLikeToggle = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("You are not logged in. Please log in to like this post.");
+      toast.error("Please log in to like this post!", {
+        duration: 3000,
+        position: "top-center",
+      });
       navigate("/login");
       return;
     }
@@ -118,21 +132,27 @@ const BlogPage = () => {
         return { ...prevPost, likes: newLikes };
       });
       setIsLiked(!isLiked);
-
-      if (response.data.likes) {
-        setPost((prevPost) => ({ ...prevPost, likes: response.data.likes }));
-      }
+      toast.success(isLiked ? "Like removed!" : "Liked!", {
+        duration: 2000,
+        position: "top-center",
+        style: { background: "#dcfce7", color: "#166534" },
+      });
     } catch (err) {
-      console.error("Error toggling like:", err.response?.data || err.message);
-      alert("Failed to toggle like.");
-      setIsLiked(isLiked);
+      toast.error("Failed to toggle like", {
+        duration: 3000,
+        position: "top-center",
+        style: { background: "#fee2e2", color: "#dc2626" },
+      });
     }
   };
 
   const handleFavoriteToggle = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("You are not logged in. Please log in to favorite this post.");
+      toast.error("Please log in to favorite this post!", {
+        duration: 3000,
+        position: "top-center",
+      });
       navigate("/login");
       return;
     }
@@ -145,7 +165,14 @@ const BlogPage = () => {
       );
 
       setIsFavorited(!isFavorited);
-      alert(isFavorited ? "Removed from favorites!" : "Added to favorites!");
+      toast.success(
+        isFavorited ? "Removed from favorites!" : "Added to favorites!",
+        {
+          duration: 2000,
+          position: "top-center",
+          style: { background: "#dcfce7", color: "#166534" },
+        }
+      );
 
       if (response.data.favorites) {
         setPost((prevPost) => ({
@@ -154,12 +181,11 @@ const BlogPage = () => {
         }));
       }
     } catch (err) {
-      console.error(
-        "Error toggling favorite:",
-        err.response?.data || err.message
-      );
-      alert("Failed to toggle favorite.");
-      setIsFavorited(isFavorited);
+      toast.error("Failed to toggle favorite", {
+        duration: 3000,
+        position: "top-center",
+        style: { background: "#fee2e2", color: "#dc2626" },
+      });
     }
   };
 
@@ -167,13 +193,19 @@ const BlogPage = () => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("You must be logged in to comment.");
+      toast.error("Please log in to comment!", {
+        duration: 3000,
+        position: "top-center",
+      });
       navigate("/login");
       return;
     }
 
     if (!newComment.trim()) {
-      alert("Comment cannot be empty.");
+      toast.error("Comment cannot be empty!", {
+        duration: 3000,
+        position: "top-center",
+      });
       return;
     }
 
@@ -184,18 +216,12 @@ const BlogPage = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // Parse user data from token
       const userData = JSON.parse(atob(token.split(".")[1]));
-      
       const newCommentData = {
         id: response.data.id || Date.now().toString(),
         content: newComment,
         createdAt: new Date().toISOString(),
-        user: {
-          id: userData.id,
-          name: userData.name,
-          email: userData.email
-        }
+        user: { id: userData.id, name: userData.name, email: userData.email },
       };
 
       setPost((prevPost) => ({
@@ -203,36 +229,57 @@ const BlogPage = () => {
         comments: [newCommentData, ...prevPost.comments],
       }));
       setNewComment("");
+      toast.success("Comment posted!", {
+        duration: 2000,
+        position: "top-center",
+        style: { background: "#dcfce7", color: "#166534" },
+      });
     } catch (err) {
-      console.error("Error posting comment:", err.response?.data || err.message);
-      alert("Failed to post comment.");
+      toast.error("Failed to post comment", {
+        duration: 3000,
+        position: "top-center",
+        style: { background: "#fee2e2", color: "#dc2626" },
+      });
     }
   };
 
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <Loader size="large" />
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-rose-50 via-white to-pink-50">
+        <Loader size="large" />
+      </div>
+    );
 
-  if (error)
-    return <div className="text-center py-8 text-red-500">{error}</div>;
   if (!post)
-    return <div className="text-center py-8 text-gray-600">Post not found</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen text-gray-600 bg-gradient-to-br from-rose-50 via-white to-pink-50">
+        Post not found
+      </div>
+    );
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
+    <div className="relative min-h-screen overflow-hidden font-sans bg-gradient-to-br from-rose-100 via-white to-pink-150">
+      {/* <div className="absolute z-10 bg-pink-500 rounded-bl-full opacity-50 right-50 top-50 w-10/2 h-1/2"></div> */}
       <Header />
+      <Toaster />
+      {/* Background Shapes */}
+      {/* <div className="absolute inset-0 -z-10">
+        <div className="absolute top-0 right-0 w-1/2 bg-pink-300 rounded-bl-full h-1/2 opacity-30"></div>
+        <div className="absolute bottom-0 left-0 w-1/3 rounded-tr-full h-1/3 bg-rose-100 opacity-20"></div>
+        <div className="absolute w-40 h-40 rounded-full opacity-25 top-1/3 left-1/4 bg-rose-50 blur-2xl"></div>
+        <div className="absolute w-48 h-48 bg-pink-100 rounded-full opacity-25 bottom-1/4 right-1/3 blur-2xl"></div>
+        <div className="absolute w-32 h-32 rounded-full top-10 left-10 bg-rose-200 opacity-15 blur-xl"></div>
+        <div className="absolute w-56 h-56 rounded-tl-full bottom-1/2 right-20 bg-pink-50 opacity-20 blur-2xl"></div>
+      </div> */}
+    
       <motion.section
-        className="relative py-8 md:py-16 px-4 md:px-6 bg-gradient-to-r from-pink-100 to-white flex flex-col items-center"
-        variants={containerVariants}
+        className="relative z-10 max-w-4xl px-4 py-12 mx-auto mt-12 sm:px-6 lg:px-8"
         initial="hidden"
         animate="visible"
+        variants={containerVariants}
       >
-        <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-pink-200 rounded-bl-full opacity-50 z-0"></div>
-
         <motion.div
-          className="bg-white p-4 md:p-8 rounded-lg shadow-lg w-full max-w-4xl z-10"
+          className="p-6 bg-white border shadow-xl sm:p-8 rounded-2xl border-rose-100"
           variants={itemVariants}
         >
           <motion.img
@@ -241,93 +288,102 @@ const BlogPage = () => {
               "https://via.placeholder.com/800x400?text=No+Image"
             }
             alt={post.title}
-            className="w-full h-48 md:h-80 object-cover rounded-lg mb-4 md:mb-6"
+            className="object-cover w-full h-48 mb-6 rounded-lg sm:h-64"
             variants={itemVariants}
-            whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300 }}
           />
 
           <motion.h1
-            className="text-2xl md:text-5xl font-bold text-gray-800 mb-3 md:mb-4 text-center"
+            className="mb-6 text-2xl font-extrabold text-center text-transparent text-gray-800 sm:text-3xl lg:text-4xl bg-gradient-to-r from-rose-500 to-pink-600 bg-clip-text"
             variants={itemVariants}
           >
             {post.title}
           </motion.h1>
 
           <motion.div
-            className="flex flex-col md:flex-row items-center justify-between text-gray-600 mb-4 md:mb-8 space-y-2 md:space-y-0"
+            className="flex flex-col items-center justify-between gap-4 mb-6 text-gray-600 sm:flex-row sm:mb-8 sm:gap-0"
             variants={itemVariants}
           >
-            <p className="text-base md:text-lg">
+            <p className="text-base sm:text-lg">
               By{" "}
-              <span className="font-semibold text-red-500">
+              <span className="font-semibold text-rose-500">
                 {post.author?.name || "Unknown Author"}
               </span>
             </p>
-            <div className="flex flex-wrap justify-center md:justify-end gap-2 md:gap-4 text-sm">
-              <span className="bg-gray-100 px-2 py-1 rounded text-xs md:text-sm">
+            <div className="flex flex-wrap justify-center gap-2 text-xs sm:justify-end sm:gap-4 sm:text-sm">
+              <span className="px-2 py-1 rounded-full bg-rose-50 sm:px-3">
                 {new Date(post.createdAt).toLocaleDateString()}
               </span>
-              <span className="bg-gray-100 px-2 py-1 rounded text-xs md:text-sm">
+              <span className="px-2 py-1 rounded-full bg-rose-50 sm:px-3">
                 {post.readingTime ? `${post.readingTime} min read` : "N/A"}
               </span>
-              <span className="bg-gray-100 px-2 py-1 rounded text-xs md:text-sm">
+              <span className="px-2 py-1 rounded-full bg-rose-50 sm:px-3">
                 {post.views} views
               </span>
-              <span className="bg-gray-100 px-2 py-1 rounded text-xs md:text-sm">
+              <span className="px-2 py-1 rounded-full bg-rose-50 sm:px-3">
                 {post.likes.length} likes
               </span>
             </div>
           </motion.div>
 
-          <motion.div className="flex justify-center md:justify-start gap-4 mb-6" variants={itemVariants}>
-            <button
+          <motion.div
+            className="flex justify-center gap-4 mb-6 sm:gap-6 sm:mb-8"
+            variants={itemVariants}
+          >
+            <motion.button
               onClick={handleLikeToggle}
-              className={`p-3 rounded-full transition-all duration-300 ${
-                isLiked 
-                ? "bg-red-500 text-white hover:bg-red-600" 
-                : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+              className={`p-2 sm:p-3 rounded-full transition-all duration-300 ${
+                isLiked
+                  ? "bg-rose-500 text-white hover:bg-rose-600"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
             >
               {isLiked ? <FaHeart size={20} /> : <FaRegHeart size={20} />}
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               onClick={handleFavoriteToggle}
-              className={`p-3 rounded-full transition-all duration-300 ${
+              className={`p-2 sm:p-3 rounded-full transition-all duration-300 ${
                 isFavorited
-                ? "bg-yellow-500 text-white hover:bg-yellow-600"
-                : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                  ? "bg-yellow-500 text-white hover:bg-yellow-600"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
             >
               {isFavorited ? <FaStar size={20} /> : <FaRegStar size={20} />}
-            </button>
+            </motion.button>
           </motion.div>
 
           <motion.div
-            className="prose prose-sm md:prose-lg max-w-none text-gray-700 mb-6 md:mb-10 border-l-4 border-red-500 pl-4 text-left"
+            className="pl-4 mb-8 prose-sm prose text-gray-700 border-l-4 sm:prose-lg max-w-none sm:mb-10 border-rose-500"
             variants={itemVariants}
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
 
           <motion.div variants={itemVariants}>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+            <h2 className="mb-6 text-xl font-semibold text-gray-800 sm:text-2xl">
               Comments ({post.comments.length})
             </h2>
 
             <form onSubmit={handleCommentSubmit} className="mb-8">
-              <textarea
+              <motion.textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Write your comment..."
-                className="w-full p-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 mb-4"
+                placeholder="Share your thoughts..."
+                className="w-full p-4 text-sm text-gray-800 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-rose-500 sm:text-base"
                 rows="4"
+                whileFocus={{ scale: 1.01, borderColor: "#f43f5e" }}
               />
-              <button
+              <motion.button
                 type="submit"
-                className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                className="px-6 py-2 mt-4 text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 Post Comment
-              </button>
+              </motion.button>
             </form>
 
             {post.comments.length > 0 ? (
@@ -336,39 +392,36 @@ const BlogPage = () => {
                 .map((comment) => (
                   <motion.div
                     key={comment.id}
-                    className="bg-gray-50 p-4 rounded-lg shadow-sm mb-4 flex gap-4"
+                    className="flex gap-4 p-4 mb-4 rounded-lg shadow-sm bg-gray-50"
                     variants={commentVariants}
                     whileHover={{ scale: 1.01 }}
                     transition={{ type: "spring", stiffness: 200 }}
                   >
-                    {/* User Avatar */}
-                    <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center text-white font-semibold text-lg">
-                      {comment.user?.name?.charAt(0).toUpperCase() || '?'}
+                    <div className="flex items-center justify-center w-10 h-10 text-lg font-semibold text-white rounded-full bg-rose-500">
+                      {comment.user?.name?.charAt(0).toUpperCase() || "?"}
                     </div>
-
-                    {/* Comment Content */}
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
                         <span className="font-medium text-gray-900">
-                          {comment.user?.name || 'Anonymous'}
+                          {comment.user?.name || "Anonymous"}
                         </span>
                         <span className="text-xs text-gray-500">
                           {formatCommentTime(comment.createdAt)}
                         </span>
                       </div>
-                      <p className="text-gray-700 text-sm">{comment.content}</p>
+                      <p className="text-sm text-gray-700">{comment.content}</p>
                     </div>
                   </motion.div>
                 ))
             ) : (
-              <p className="text-gray-600 text-center py-8">
-                No comments yet. Be the first to comment!
+              <p className="py-8 text-sm text-center text-gray-600 sm:text-base">
+                No comments yet. Be the first to share your thoughts!
               </p>
             )}
           </motion.div>
 
           <motion.div
-            className="flex justify-between items-center text-sm text-gray-500 mt-8"
+            className="flex flex-col items-center justify-between gap-4 mt-8 text-sm text-gray-500 sm:flex-row sm:gap-0"
             variants={itemVariants}
           >
             <p>
@@ -384,10 +437,10 @@ const BlogPage = () => {
               </span>
             </p>
             <Link
-              to="/blogs"
-              className="text-red-500 hover:underline font-semibold"
+              to="/blog"
+              className="font-semibold transition text-rose-500 hover:text-rose-600"
             >
-              Back to Blogs
+              Back
             </Link>
           </motion.div>
         </motion.div>
