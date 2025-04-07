@@ -428,7 +428,7 @@ const BlogPage = () => {
               Status:{" "}
               <span
                 className={
-                  post.status === "published"
+                  post.status === "Published"
                     ? "text-green-500"
                     : "text-yellow-500"
                 }
@@ -438,10 +438,11 @@ const BlogPage = () => {
             </p>
             <Link
               to="/blog"
-              className="font-semibold transition text-rose-500 hover:text-rose-600"
+              className="font-semibold px-8 py-2 rounded-full transition bg-red-500 hover:bg-rose-500 text-white"
             >
               Back
             </Link>
+            {/* <button className="bg-red-500 rounded-full px-8 py-2 text-white"><Link to="/login">Back</Link></button> */}
           </motion.div>
         </motion.div>
       </motion.section>
