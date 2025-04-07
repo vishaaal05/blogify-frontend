@@ -188,10 +188,14 @@ const UserDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50 font-sans relative overflow-hidden">
       <Header />
-      <div className="absolute inset-0 bg-gradient-to-br from-pink-50 to-white z-0">
+      <div className="absolute inset-0 z-0 bg-gradient-to-r from-pink-100 to-white">
+        <div className="absolute top-0 right-0 w-3/4 bg-pink-200 rounded-bl-full h-3/4 opacity-30"></div>
+        <div className="absolute bottom-0 left-0 w-1/2 bg-pink-100 rounded-tr-full h-1/2 opacity-20"></div>
+      </div>
+      {/* <div className="absolute inset-0 bg-gradient-to-br from-pink-50 to-white z-0">
         <div className="absolute top-0 right-0 w-2/3 h-2/3 bg-pink-100 rounded-bl-full opacity-20"></div>
         <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-red-100 rounded-tr-full opacity-10"></div>
-      </div>
+      </div> */}
 
       <motion.section
         className="pt-20 pb-12 relative z-10"
