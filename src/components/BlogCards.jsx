@@ -66,16 +66,19 @@ const BlogsPage = () => {
               >
                 <div className="relative h-48">
                   <img
-                    src={post.featuredImg || "https://via.placeholder.com/300x200?text=No+Image"}
+                    src={
+                      post.featuredImg ||
+                      "https://via.placeholder.com/300x200?text=No+Image"
+                    }
                     alt={post.title}
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
                     <p className="text-white text-sm font-medium">
-                      {new Date(post.createdAt).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
+                      {new Date(post.createdAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
                       })}
                     </p>
                   </div>
@@ -84,13 +87,21 @@ const BlogsPage = () => {
                   <h3 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">
                     {post.title}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                    {post.excerpt || post.content?.substring(0, 120) + "..."}
-                  </p>
+                  <p
+                    className="text-gray-600 text-sm mb-4 line-clamp-3"
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        post.excerpt || post.content?.substring(0, 500)+ "...",
+                    }}
+                  ></p>
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <img
-                        src={post.author?.avatar || "https://avatar.iran.liara.run/public/boy"}
+                        src={
+                          post.author?.avatar ||
+                          "https://avatar.iran.liara.run/public/boy"
+                        }
                         alt={post.author?.name}
                         className="w-8 h-8 rounded-full"
                       />
