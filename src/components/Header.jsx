@@ -203,10 +203,10 @@ export const Header = () => {
           </Link>
 
           {isLoggedIn ? (
-            <div className="flex flex-col gap-2 mt-2">
+            <div className="flex flex-col gap-2 mt-2 px-4">
               <button
-                onClick={toggleProfileMenu}
-                className="flex items-center px-4 py-2 space-x-2 focus:outline-none"
+                onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+                className="flex items-center space-x-2 focus:outline-none"
                 aria-label="Toggle profile menu"
               >
                 <img
@@ -216,14 +216,9 @@ export const Header = () => {
                 />
                 <span className="text-gray-600 text-sm">Profile</span>
               </button>
+
               {profileMenuOpen && (
-                <motion.div
-                  className="flex flex-col gap-1 px-4"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-                >
+                <>
                   <Link
                     to="/user/dashboard"
                     onClick={closeMenu}
@@ -240,11 +235,11 @@ export const Header = () => {
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-red-500 text-sm"
+                    className="text-left px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-red-500 text-sm"
                   >
                     Logout
                   </button>
-                </motion.div>
+                </>
               )}
             </div>
           ) : isLoginPage ? (
