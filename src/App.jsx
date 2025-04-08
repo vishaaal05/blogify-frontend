@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import AuthorDashboardPage from "./pages/AuthorDashboardPage";
 import BlogsPage from "./pages/BlogsPage";
-import BlogPage from "./pages/BlogPage";
+import ViewBlogPage from "./pages/ViewBlogPage";
 import UserDashboard from "./pages/UserDashboardPage";
 import CreateBlog from "./pages/CreateBlog";
 import UpdateBlog from "./pages/UpdateBlog";
@@ -20,7 +20,7 @@ function App() {
         <Route path="/user/dashboard" element={<UserDashboard />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/home" element={<HomePage />} />
-          <Route path="/blog/:id" element={<BlogPage />} />
+          <Route path="/blog/:id" element={<ViewBlogPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/author/dashboard" element={<AuthorDashboardPage />} />
