@@ -9,7 +9,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
-const BlogsPage = () => {
+const BlogCards = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -91,7 +91,7 @@ const BlogsPage = () => {
                     className="text-gray-600 text-sm mb-4 line-clamp-3"
                     dangerouslySetInnerHTML={{
                       __html:
-                        post.excerpt || post.content?.substring(0, 500)+ "...",
+                        post.excerpt || post.content?.substring(0, 500) + "...",
                     }}
                   ></p>
 
@@ -124,4 +124,4 @@ const BlogsPage = () => {
   );
 };
 
-export default BlogsPage;
+export default BlogCards;
