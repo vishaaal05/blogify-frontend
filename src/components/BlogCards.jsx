@@ -7,7 +7,12 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
-const BlogCards = ({ posts }) => {
+const BlogCards = ({ posts, categories }) => {
+  const getCategoryName = (categoryId) => {
+    const category = categories.find((cat) => cat.id === categoryId);
+    return category ? category.name : "";
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white px-4 sm:px-6 lg:px-8">
       <motion.div
@@ -54,6 +59,16 @@ const BlogCards = ({ posts }) => {
                     </div>
                   </div>
                   <div className="p-6">
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {post.categories.map((cat) => (
+                        <span
+                          key={cat.categoryId}
+                          className="px-2 py-1 bg-red-100 text-red-600 rounded-full text-xs"
+                        >
+                          {getCategoryName(cat.categoryId)}
+                        </span>
+                      ))}
+                    </div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">
                       {post.title}
                     </h3>
