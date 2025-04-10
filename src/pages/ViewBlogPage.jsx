@@ -429,8 +429,8 @@ const BlogPage = () => {
               <span
                 className={
                   post.status === "Published"
-                    ? "text-green-500"
-                    : "text-yellow-500"
+                    ? "text-yellow-500"
+                    : "text-green-500"
                 }
               >
                 {post.status}
