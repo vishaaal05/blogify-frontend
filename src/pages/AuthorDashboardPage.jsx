@@ -48,6 +48,7 @@ const DashboardPage = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [totalLikes, setTotalLikes] = useState(0);
 
   useEffect(() => {
     const checkAuthAndFetchPosts = async () => {
@@ -70,6 +71,9 @@ const DashboardPage = () => {
           : Array.isArray(response.data)
           ? response.data
           : [];
+        
+        const likes = fetchedPosts.reduce((total, post) => total + (post.likes?.length || 0), 0);
+        setTotalLikes(likes);
         setPosts(fetchedPosts);
         setLoading(false);
       } catch (err) {
@@ -189,7 +193,7 @@ const DashboardPage = () => {
                     onClick={() => {}}
                     className="bg-gray-200 p-3 rounded-md text-center hover:bg-gray-500 transition-colors"
                   >
-                    <span className="block text-2xl font-bold">Coming Soon</span>
+                    <span className="block text-2xl font-bold">{totalLikes}</span>
                     <span className="text-xs">Likes Received</span>
                   </button>
                 </div>
