@@ -1,52 +1,13 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import Loader from "./Loader";
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
-const BlogCards = () => {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get(
-          "https://blogify-backend-sxn5.onrender.com/v1/api/posts"
-        );
-        const publishedPosts = response.data.filter(
-          (post) => post.status === "published"
-        );
-        setPosts(publishedPosts); // Show all posts (or filter as needed)
-        setLoading(false);
-      } catch (err) {
-        setError("Failed to fetch blog posts");
-        setLoading(false);
-        console.error("Error fetching posts:", err);
-      }
-    };
-
-    fetchPosts();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader size="large" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return <div className="text-center py-8 text-red-500">{error}</div>;
-  }
-
+const BlogCards = ({ posts }) => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-16 px-4 sm:px-6 lg:px-8">
       <motion.div
