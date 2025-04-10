@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -8,6 +8,7 @@ import { Editor } from "primereact/editor"; // Import PrimeReact Editor
 import "primereact/resources/themes/lara-light-indigo/theme.css"; // Theme
 import "primereact/resources/primereact.min.css"; // Core CSS
 import "primeicons/primeicons.css"; // Icons
+import toast, { Toaster } from 'react-hot-toast'; // Import toast
 
 // Animation Variants
 const containerVariants = {
@@ -32,6 +33,60 @@ const CreateBlog = () => {
   const [status, setStatus] = useState("draft"); // Default to draft
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [newCategory, setNewCategory] = useState("");
+  const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(
+        "https://blogify-backend-sxn5.onrender.com/v1/api/categories"
+      );
+      setCategories(response.data.categories || []); // Changed from data.data to data.categories
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+    }
+  };
+
+  const handleCreateCategory = async () => {
+    if (!newCategory.trim()) {
+      toast.error("Category name cannot be empty!");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.post(
+        "https://blogify-backend-sxn5.onrender.com/v1/api/categories",
+        { name: newCategory },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const newCategoryData = {
+        id: response.data.category.id,
+        name: response.data.category.name
+      };
+      
+      setCategories([...categories, newCategoryData]);
+      setSelectedCategory(newCategoryData.id);
+      setNewCategory("");
+      setShowNewCategoryInput(false);
+      toast.success("New category created successfully!");
+    } catch (err) {
+      console.error("Error creating category:", err);
+      toast.error(err.response?.data?.message || "Failed to create category");
+      setError(err.response?.data?.message || "Failed to create category");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,6 +112,7 @@ const CreateBlog = () => {
           authorId,
           featuredImg: featuredImg || null,
           status,
+          categoryId: selectedCategory || null,
         },
         {
           headers: {
@@ -78,6 +134,7 @@ const CreateBlog = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
+      <Toaster position="top-center" />
       <motion.section
         className="relative py-16 px-6 bg-gradient-to-r from-pink-100 to-white flex flex-col items-center"
         variants={containerVariants}
@@ -124,6 +181,54 @@ const CreateBlog = () => {
                 placeholder="Enter your blog title"
                 required
               />
+            </motion.div>
+
+            {/* Category Selection */}
+            <motion.div variants={itemVariants}>
+              <label className="block text-lg font-semibold text-gray-800 mb-2">
+                Category
+              </label>
+              <div className="space-y-3">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select a category</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+
+                <button
+                  type="button"
+                  onClick={() => setShowNewCategoryInput(!showNewCategoryInput)}
+                  className="text-blue-500 hover:text-blue-700"
+                >
+                  + Add New Category
+                </button>
+
+                {showNewCategoryInput && (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newCategory}
+                      onChange={(e) => setNewCategory(e.target.value)}
+                      className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter new category name"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleCreateCategory}
+                      className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                    >
+                      Create
+                    </button>
+                  </div>
+                )}
+              </div>
             </motion.div>
 
             {/* Content (PrimeReact Editor) */}
