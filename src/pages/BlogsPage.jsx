@@ -10,39 +10,44 @@ const BlogsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [categories, setCategories] = useState([
-    "Technology",
-    "Lifestyle",
-    "Travel",
-    "Food",
-    "Health",
-    "Business"
-  ]);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(
-          "https://blogify-backend-sxn5.onrender.com/v1/api/posts"
-        );
-        const publishedPosts = response.data.filter(
+        const [postsResponse, categoriesResponse] = await Promise.all([
+          axios.get("https://blogify-backend-sxn5.onrender.com/v1/api/posts"),
+          axios.get("https://blogify-backend-sxn5.onrender.com/v1/api/categories")
+        ]);
+
+        const publishedPosts = postsResponse.data.filter(
           (post) => post.status === "published"
         );
         setPosts(publishedPosts);
+        
+        const categoriesData = Array.isArray(categoriesResponse.data.categories) 
+          ? categoriesResponse.data.categories 
+          : Array.isArray(categoriesResponse.data) 
+            ? categoriesResponse.data 
+            : [];
+            
+        setCategories(categoriesData);
         setLoading(false);
       } catch (err) {
-        setError("Failed to fetch blog posts");
+        setError("Failed to fetch data");
         setLoading(false);
-        console.error("Error fetching posts:", err);
+        console.error("Error fetching data:", err);
       }
     };
 
-    fetchPosts();
+    fetchData();
   }, []);
 
   const filteredPosts = selectedCategory === "all" 
     ? posts 
-    : posts.filter(post => post.category === selectedCategory);
+    : posts.filter(post => 
+        post.categories.some(cat => cat.categoryId === selectedCategory)
+      );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -61,7 +66,8 @@ const BlogsPage = () => {
               animate={{ opacity: 1, y: 0 }}
               className="mb-8 px-4"
             >
-              <div className="flex flex-wrap gap-3 my-10 items-center justify-center">
+              {/* <h2 className="text-2xl font-bold text-gray-800 mb-4">Categories</h2> */}
+              <div className="flex flex-wrap gap-3 my-10 justify-center items-center">
                 <button
                   onClick={() => setSelectedCategory("all")}
                   className={`px-4 py-2 rounded-full transition-colors ${
@@ -74,20 +80,23 @@ const BlogsPage = () => {
                 </button>
                 {categories.map((category) => (
                   <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
                     className={`px-4 py-2 rounded-full transition-colors ${
-                      selectedCategory === category
+                      selectedCategory === category.id
                         ? "bg-red-500 text-white"
                         : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                     }`}
                   >
-                    {category}
+                    {category.name}
                   </button>
                 ))}
               </div>
             </motion.div>
-            <BlogCards posts={filteredPosts} />
+            <BlogCards 
+              posts={filteredPosts} 
+              categories={categories}
+            />
           </>
         )}
       </div>
