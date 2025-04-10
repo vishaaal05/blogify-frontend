@@ -104,15 +104,15 @@ const CreateBlog = () => {
     const decoded = jwtDecode(token);
     const authorId = decoded.id;
     try {
+      // First create the blog post
       const response = await axios.post(
         "https://blogify-backend-sxn5.onrender.com/v1/api/posts/create",
         {
           title,
-          content, // Send HTML content from Editor
+          content,
           authorId,
           featuredImg: featuredImg || null,
           status,
-          categoryId: selectedCategory || null,
         },
         {
           headers: {
@@ -121,12 +121,35 @@ const CreateBlog = () => {
           },
         }
       );
-      console.log("Blog Created:", response.data);
-      alert("Blog post created successfully!");
+
+      // If a category is selected, associate it with the post
+      if (selectedCategory) {
+        try {
+          await axios.post(
+            "https://blogify-backend-sxn5.onrender.com/v1/api/categories/add/post",
+            {
+              postId: response.data.post.id,
+              categoryId: selectedCategory
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+        } catch (categoryErr) {
+          console.error("Error associating category:", categoryErr);
+          toast.error("Post created but failed to associate category");
+        }
+      }
+
+      toast.success("Blog post created successfully!");
       navigate("/author/dashboard");
     } catch (err) {
       console.error("Error creating blog:", err.response?.data || err.message);
       setError(err.response?.data?.message || "Failed to create blog post.");
+      toast.error("Failed to create blog post");
     } finally {
       setLoading(false);
     }
