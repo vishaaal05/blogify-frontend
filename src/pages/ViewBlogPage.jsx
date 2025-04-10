@@ -61,33 +61,41 @@ const BlogPage = () => {
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [comments, setComments] = useState([]);
   const [isLiked, setIsLiked] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
   const [newComment, setNewComment] = useState("");
 
   useEffect(() => {
-    const fetchPost = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `https://blogify-backend-sxn5.onrender.com/v1/api/posts/${id}`
-        );
-        setPost(response.data.post);
+        const [postResponse, commentsResponse] = await Promise.all([
+          axios.get(
+            `https://blogify-backend-sxn5.onrender.com/v1/api/posts/${id}`
+          ),
+          axios.get(
+            `https://blogify-backend-sxn5.onrender.com/v1/api/comments/post/${id}`
+          ),
+        ]);
+
+        setPost(postResponse.data.post);
+        setComments(commentsResponse.data.comments || []);
         setLoading(false);
 
         const token = localStorage.getItem("token");
         if (token) {
           const userId = JSON.parse(atob(token.split(".")[1])).id;
           setIsLiked(
-            response.data.post.likes.some((like) => like.userId === userId)
+            postResponse.data.post.likes.some((like) => like.userId === userId)
           );
           setIsFavorited(
-            response.data.post.favorites?.some(
+            postResponse.data.post.favorites?.some(
               (fav) => fav.userId === userId
             ) || false
           );
         }
       } catch (err) {
-        toast.error("Failed to fetch blog post", {
+        toast.error("Failed to fetch blog data", {
           duration: 4000,
           position: "top-center",
           style: { background: "#fee2e2", color: "#dc2626" },
@@ -95,7 +103,7 @@ const BlogPage = () => {
         setLoading(false);
       }
     };
-    fetchPost();
+    fetchData();
   }, [id]);
 
   const handleLikeToggle = async () => {
@@ -224,10 +232,7 @@ const BlogPage = () => {
         user: { id: userData.id, name: userData.name, email: userData.email },
       };
 
-      setPost((prevPost) => ({
-        ...prevPost,
-        comments: [newCommentData, ...prevPost.comments],
-      }));
+      setComments((prevComments) => [newCommentData, ...prevComments]);
       setNewComment("");
       toast.success("Comment posted!", {
         duration: 2000,
@@ -259,18 +264,8 @@ const BlogPage = () => {
 
   return (
     <div className="relative min-h-screen overflow-hidden font-sans bg-gradient-to-br from-rose-100 via-white to-pink-150">
-      {/* <div className="absolute z-10 bg-pink-500 rounded-bl-full opacity-50 right-50 top-50 w-10/2 h-1/2"></div> */}
       <Header />
       <Toaster />
-      {/* Background Shapes */}
-      {/* <div className="absolute inset-0 -z-10">
-        <div className="absolute top-0 right-0 w-1/2 bg-pink-300 rounded-bl-full h-1/2 opacity-30"></div>
-        <div className="absolute bottom-0 left-0 w-1/3 rounded-tr-full h-1/3 bg-rose-100 opacity-20"></div>
-        <div className="absolute w-40 h-40 rounded-full opacity-25 top-1/3 left-1/4 bg-rose-50 blur-2xl"></div>
-        <div className="absolute w-48 h-48 bg-pink-100 rounded-full opacity-25 bottom-1/4 right-1/3 blur-2xl"></div>
-        <div className="absolute w-32 h-32 rounded-full top-10 left-10 bg-rose-200 opacity-15 blur-xl"></div>
-        <div className="absolute w-56 h-56 rounded-tl-full bottom-1/2 right-20 bg-pink-50 opacity-20 blur-2xl"></div>
-      </div> */}
     
       <motion.section
         className="relative z-10 max-w-4xl px-4 py-12 mx-auto mt-12 sm:px-6 lg:px-8"
@@ -364,7 +359,7 @@ const BlogPage = () => {
 
           <motion.div variants={itemVariants}>
             <h2 className="mb-6 text-xl font-semibold text-gray-800 sm:text-2xl">
-              Comments ({post.comments.length})
+              Comments ({comments.length})
             </h2>
 
             <form onSubmit={handleCommentSubmit} className="mb-8">
@@ -386,8 +381,8 @@ const BlogPage = () => {
               </motion.button>
             </form>
 
-            {post.comments.length > 0 ? (
-              [...post.comments]
+            {comments.length > 0 ? (
+              [...comments]
                 .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
                 .map((comment) => (
                   <motion.div
@@ -442,7 +437,6 @@ const BlogPage = () => {
             >
               Back
             </Link>
-            {/* <button className="bg-red-500 rounded-full px-8 py-2 text-white"><Link to="/login">Back</Link></button> */}
           </motion.div>
         </motion.div>
       </motion.section>
