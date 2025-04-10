@@ -4,6 +4,8 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Editor } from "primereact/editor";
+import toast, { Toaster } from "react-hot-toast";
+
 // Animation Variants
 const containerVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -29,51 +31,69 @@ const UpdateBlog = () => {
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [currentCategoryId, setCurrentCategoryId] = useState(null);
 
   useEffect(() => {
-    const fetchPost = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("You must be logged in to edit a blog post.");
-        navigate("/login");
-        return;
-      }
-
-      try {
-        const response = await axios.get(
-          `https://blogify-backend-sxn5.onrender.com/v1/api/posts/${postId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        console.log("Fetched Post:", response.data);
-        const post = response.data.post; // Assuming { success: true, post: {...} }
-        setTitle(post.title);
-        setContent(post.content);
-        setFeaturedImg(post.featuredImg || "");
-        setStatus(post.status);
-        setLoading(false);
-      } catch (err) {
-        console.error(
-          "Error fetching post:",
-          err.response?.data || err.message
-        );
-        setError(
-          "Failed to load blog post. It may not exist or you lack permission."
-        );
-        setLoading(false);
-      }
-    };
-
+    fetchCategories();
     fetchPost();
   }, [postId, navigate]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(
+        "https://blogify-backend-sxn5.onrender.com/v1/api/categories"
+      );
+      setCategories(response.data.categories || []);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+    }
+  };
+
+  const fetchPost = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("You must be logged in to edit a blog post.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `https://blogify-backend-sxn5.onrender.com/v1/api/posts/${postId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const post = response.data.post; // Assuming { success: true, post: {...} }
+      setTitle(post.title);
+      setContent(post.content);
+      setFeaturedImg(post.featuredImg || "");
+      setStatus(post.status);
+      if (post.category) {
+        setSelectedCategory(post.category.id);
+        setCurrentCategoryId(post.category.id);
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error(
+        "Error fetching post:",
+        err.response?.data || err.message
+      );
+      setError(
+        "Failed to load blog post. It may not exist or you lack permission."
+      );
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("You must be logged in to update a blog post.");
+      toast.error("You must be logged in to update a blog post.");
       navigate("/login");
       return;
     }
@@ -82,7 +102,8 @@ const UpdateBlog = () => {
     setError(null);
 
     try {
-      const response = await axios.put(
+      // Update post
+      await axios.put(
         `https://blogify-backend-sxn5.onrender.com/v1/api/posts/${postId}`,
         {
           title,
@@ -97,11 +118,29 @@ const UpdateBlog = () => {
           },
         }
       );
-      console.log("Blog Updated:", response.data);
-      alert("Blog post updated successfully!");
+
+      // Update category if changed
+      if (selectedCategory !== currentCategoryId) {
+        await axios.post(
+          "https://blogify-backend-sxn5.onrender.com/v1/api/categories/add/post",
+          {
+            postId: postId,
+            categoryId: selectedCategory,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      }
+
+      toast.success("Blog post updated successfully!");
       navigate("/author/dashboard");
     } catch (err) {
       console.error("Error updating blog:", err.response?.data || err.message);
+      toast.error(err.response?.data?.message || "Failed to update blog post.");
       setError(err.response?.data?.message || "Failed to update blog post.");
     } finally {
       setSubmitLoading(false);
@@ -115,6 +154,7 @@ const UpdateBlog = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
+      <Toaster position="top-center" />
       <motion.section
         className="relative py-16 px-6 bg-gradient-to-r from-pink-100 to-white flex flex-col items-center"
         variants={containerVariants}
@@ -161,6 +201,25 @@ const UpdateBlog = () => {
                 placeholder="Enter your blog title"
                 required
               />
+            </motion.div>
+
+            {/* Category */}
+            <motion.div variants={itemVariants}>
+              <label className="block text-lg font-semibold text-gray-800 mb-2">
+                Category
+              </label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select a category</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
             </motion.div>
 
             {/* Content */}
