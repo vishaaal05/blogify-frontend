@@ -218,21 +218,30 @@ const BlogPage = () => {
     }
 
     try {
+      const userData = JSON.parse(atob(token.split(".")[1]));
       const response = await axios.post(
         "https://blogify-backend-sxn5.onrender.com/v1/api/comments/",
-        { postId: id, content: newComment },
+        { 
+          postId: id, 
+          content: newComment,
+          userId: userData.id,
+          userName: userData.name
+        },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      const userData = JSON.parse(atob(token.split(".")[1]));
+      // Make sure we're using the data from the response
+      const commentData = response.data.comment || response.data;
       const newCommentData = {
-        id: response.data.id || Date.now().toString(),
-        content: newComment,
-        createdAt: new Date().toISOString(),
-        user: { id: userData.id, name: userData.name, email: userData.email },
+        ...commentData,
+        user: {
+          id: userData.id,
+          name: userData.name,
+          email: userData.email
+        }
       };
 
-      setComments((prevComments) => [newCommentData, ...prevComments]);
+      setComments(prevComments => [newCommentData, ...prevComments]);
       setNewComment("");
       toast.success("Comment posted!", {
         duration: 2000,
@@ -240,6 +249,7 @@ const BlogPage = () => {
         style: { background: "#dcfce7", color: "#166534" },
       });
     } catch (err) {
+      console.error("Comment error:", err);
       toast.error("Failed to post comment", {
         duration: 3000,
         position: "top-center",
