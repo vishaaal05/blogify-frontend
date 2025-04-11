@@ -90,7 +90,6 @@ const UpdateBlog = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const token = localStorage.getItem("token");
     if (!token) {
       toast.error("You must be logged in to update a blog post.");
@@ -102,14 +101,15 @@ const UpdateBlog = () => {
     setError(null);
 
     try {
-      // Update post
-      await axios.put(
+      // First update the post
+      const updateResponse = await axios.put(
         `https://blogify-backend-sxn5.onrender.com/v1/api/posts/${postId}`,
         {
           title,
           content,
           featuredImg: featuredImg || null,
           status,
+          categoryId: selectedCategory, // Include categoryId in the main update
         },
         {
           headers: {
@@ -119,29 +119,17 @@ const UpdateBlog = () => {
         }
       );
 
-      // Update category if changed
-      if (selectedCategory !== currentCategoryId) {
-        await axios.post(
-          "https://blogify-backend-sxn5.onrender.com/v1/api/categories/add/post",
-          {
-            postId: postId,
-            categoryId: selectedCategory,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-      }
-
+      // Show success message
       toast.success("Blog post updated successfully!");
-      navigate("/author/dashboard");
+
+      // Navigate to the updated blog post page instead of dashboard
+      navigate(`/blog/${postId}`);
     } catch (err) {
       console.error("Error updating blog:", err.response?.data || err.message);
-      toast.error(err.response?.data?.message || "Failed to update blog post.");
-      setError(err.response?.data?.message || "Failed to update blog post.");
+      const errorMessage =
+        err.response?.data?.message || "Failed to update blog post.";
+      toast.error(errorMessage);
+      setError(errorMessage);
     } finally {
       setSubmitLoading(false);
     }
