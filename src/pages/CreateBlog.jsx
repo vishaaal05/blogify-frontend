@@ -93,7 +93,7 @@ const CreateBlog = () => {
 
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("You must be logged in to create a blog post.");
+      toast.error("You must be logged in to create a blog post.");
       navigate("/login");
       return;
     }
@@ -122,13 +122,15 @@ const CreateBlog = () => {
         }
       );
 
+      const newPostId = response.data.post.id;
+
       // If a category is selected, associate it with the post
       if (selectedCategory) {
         try {
           await axios.post(
             "https://blogify-backend-sxn5.onrender.com/v1/api/categories/add/post",
             {
-              postId: response.data.post.id,
+              postId: newPostId,
               categoryId: selectedCategory
             },
             {
@@ -144,12 +146,22 @@ const CreateBlog = () => {
         }
       }
 
-      toast.success("Blog post created successfully!");
-      navigate("/author/dashboard");
+      toast.success("Blog post created successfully!", {
+        duration: 3000,
+        icon: '🎉',
+      });
+      
+      // Add a small delay before navigation to ensure toast is visible
+      setTimeout(() => {
+        navigate(`/blog/${newPostId}`);
+      }, 1000);
+
     } catch (err) {
       console.error("Error creating blog:", err.response?.data || err.message);
       setError(err.response?.data?.message || "Failed to create blog post.");
-      toast.error("Failed to create blog post");
+      toast.error(err.response?.data?.message || "Failed to create blog post", {
+        duration: 4000,
+      });
     } finally {
       setLoading(false);
     }
