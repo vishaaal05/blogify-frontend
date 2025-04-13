@@ -2,8 +2,34 @@ import { motion } from "framer-motion";
 import { Header } from "../components/Header";
 import { Link } from "react-router-dom";
 import { FaArrowRight, FaEnvelope } from "react-icons/fa";
+import axios from "axios";
+import { useState, useEffect } from "react";
 
 const HomePage = () => {
+  const [featuredPosts, setFeaturedPosts] = useState([]);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await axios.get('https://blogify-backend-sxn5.onrender.com/v1/api/posts');
+        // Check if response.data exists and has posts
+        if (response.data && Array.isArray(response.data)) {
+          setFeaturedPosts(response.data.slice(0, 3));
+        } else if (response.data && Array.isArray(response.data.data)) {
+          setFeaturedPosts(response.data.data.slice(0, 3));
+        } else {
+          console.error('Unexpected API response format:', response.data);
+          setFeaturedPosts([]);
+        }
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+        setFeaturedPosts([]);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -33,33 +59,6 @@ const HomePage = () => {
       transition: { type: "spring", stiffness: 120, damping: 10 },
     },
   };
-
-  // Dummy data for featured posts and categories
-  const featuredPosts = [
-    {
-      id: 1,
-      title: "The Art of Storytelling",
-      img: "https://via.placeholder.com/300x200",
-      author: "Jane Doe",
-      date: "Oct 15, 2024",
-    },
-    {
-      id: 2,
-      title: "Tech Trends 2025",
-      img: "https://via.placeholder.com/300x200",
-      author: "John Smith",
-      date: "Oct 10, 2024",
-    },
-    {
-      id: 3,
-      title: "Mindful Living",
-      img: "https://via.placeholder.com/300x200",
-      author: "Emily Brown",
-      date: "Oct 5, 2024",
-    },
-  ];
-
-  const categories = ["Technology", "Lifestyle", "Travel", "Food", "Health"];
 
   return (
     <div className="relative min-h-screen overflow-hidden font-sans bg-gradient-to-r from-pink-100 to-white">
@@ -151,13 +150,14 @@ const HomePage = () => {
         </motion.h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {featuredPosts.map((post) => (
-            <Link to={`/blog/${post.id}`} key={post.id}>
-              <motion.div
-                className="overflow-hidden transition-shadow duration-300 bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg"
-                variants={itemVariants}
-              >
+            <motion.div
+              key={post.id}
+              className="overflow-hidden transition-shadow duration-300 bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg"
+              variants={itemVariants}
+            >
+              <Link to={`/blog/${post.id}`}>
                 <img
-                  src={post.img}
+                  src={post.featuredImg || "https://via.placeholder.com/300x200"}
                   alt={post.title}
                   className="object-cover w-full h-40 rounded-t-lg sm:h-48"
                 />
@@ -166,12 +166,12 @@ const HomePage = () => {
                     {post.title}
                   </h3>
                   <div className="flex items-center justify-between text-sm text-gray-600">
-                    <span>{post.author}</span>
-                    <span>{post.date}</span>
+                    <span>By <b>{post.author?.name || 'Anonymous'}</b></span>
+                    <span>{new Date(post.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
-              </motion.div>
-            </Link>
+              </Link>
+            </motion.div>
           ))}
         </div>
       </motion.section>
