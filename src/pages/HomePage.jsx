@@ -224,7 +224,7 @@ const HomePage = () => {
           <img
             src="/blog.png"
             alt="Blog"
-            className="max-w-xs w-64 sm:max-w-sm md:max-w-md lg:max-w-md"
+            className="max-w-xs w-64 h-72 sm:max-w-sm md:max-w-md lg:max-w-md"
           />
         </motion.div>
         <motion.div
