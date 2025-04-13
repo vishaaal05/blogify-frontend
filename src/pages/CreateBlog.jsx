@@ -37,6 +37,9 @@ const CreateBlog = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [newCategory, setNewCategory] = useState("");
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -85,6 +88,53 @@ const CreateBlog = () => {
       console.error("Error creating category:", err);
       toast.error(err.response?.data?.message || "Failed to create category");
       setError(err.response?.data?.message || "Failed to create category");
+    }
+  };
+
+  const uploadImageToCloudinary = async (file) => {
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.post(
+        'https://blogify-backend-sxn5.onrender.com/api/v1/upload',
+        formData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+      
+      // Handle the correct response structure
+      if (response.data.success && response.data.imageUrl) {
+        setFeaturedImg(response.data.imageUrl);
+        toast.success('Image uploaded successfully!');
+      } else {
+        throw new Error('Failed to get image URL from server');
+      }
+    } catch (err) {
+      console.error('Error uploading image:', err);
+      toast.error(err.response?.data?.message || 'Failed to upload image');
+      setImagePreview(null); // Clear preview on error
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast.error('Image size should be less than 5MB');
+        return;
+      }
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+      uploadImageToCloudinary(file);
     }
   };
 
@@ -289,16 +339,34 @@ const CreateBlog = () => {
                 htmlFor="featuredImg"
                 className="block text-lg font-semibold text-gray-800 mb-2"
               >
-                Featured Image URL (Optional)
+                Thumbnail Image
               </label>
-              <input
-                type="url"
-                id="featuredImg"
-                value={featuredImg}
-                onChange={(e) => setFeaturedImg(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="https://example.com/image.jpg"
-              />
+              <div className="space-y-4">
+                <input
+                  type="file"
+                  id="featuredImg"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {uploading && (
+                  <div className="text-blue-500">Uploading image...</div>
+                )}
+                {imagePreview && (
+                  <div className="mt-4">
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="max-w-xs rounded-lg shadow-md"
+                    />
+                  </div>
+                )}
+                {featuredImg && (
+                  <div className="text-sm text-green-600">
+                    Image uploaded successfully! ✓
+                  </div>
+                )}
+              </div>
             </motion.div>
 
             {/* Status */}
