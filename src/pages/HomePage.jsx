@@ -7,18 +7,21 @@ import { useState, useEffect } from "react";
 
 const HomePage = () => {
   const [featuredPosts, setFeaturedPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(
           "https://blogify-backend-sxn5.onrender.com/v1/api/posts"
         );
-        // Check if response.data exists and has posts
-        if (response.data && Array.isArray(response.data)) {
+        console.log('API Response:', response.data); // Debug log
+
+        if (response.data && response.data.posts) {
+          setFeaturedPosts(response.data.posts.slice(0, 3));
+        } else if (response.data && Array.isArray(response.data)) {
           setFeaturedPosts(response.data.slice(0, 3));
-        } else if (response.data && Array.isArray(response.data.data)) {
-          setFeaturedPosts(response.data.data.slice(0, 3));
         } else {
           console.error("Unexpected API response format:", response.data);
           setFeaturedPosts([]);
@@ -26,6 +29,8 @@ const HomePage = () => {
       } catch (error) {
         console.error("Error fetching posts:", error);
         setFeaturedPosts([]);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -61,6 +66,12 @@ const HomePage = () => {
       transition: { type: "spring", stiffness: 120, damping: 10 },
     },
   };
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">
+      <p className="text-lg text-gray-600">Loading featured posts...</p>
+    </div>;
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden font-sans bg-gradient-to-r from-pink-100 to-white">
@@ -169,6 +180,9 @@ const HomePage = () => {
                   <h3 className="mb-2 text-base font-semibold text-gray-900 sm:text-lg line-clamp-2">
                     {post.title}
                   </h3>
+                  <p className="mb-3 text-sm text-gray-600 line-clamp-3">
+                    {post.content ? post.content.substring(0, 150) + "..." : "No content available"}
+                  </p>
                   <div className="flex items-center justify-between text-sm text-gray-600">
                     <span>
                       By <b>{post.author?.name || "Anonymous"}</b>
