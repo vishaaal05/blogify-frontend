@@ -11,18 +11,20 @@ const HomePage = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get('https://blogify-backend-sxn5.onrender.com/v1/api/posts');
+        const response = await axios.get(
+          "https://blogify-backend-sxn5.onrender.com/v1/api/posts"
+        );
         // Check if response.data exists and has posts
         if (response.data && Array.isArray(response.data)) {
           setFeaturedPosts(response.data.slice(0, 3));
         } else if (response.data && Array.isArray(response.data.data)) {
           setFeaturedPosts(response.data.data.slice(0, 3));
         } else {
-          console.error('Unexpected API response format:', response.data);
+          console.error("Unexpected API response format:", response.data);
           setFeaturedPosts([]);
         }
       } catch (error) {
-        console.error('Error fetching posts:', error);
+        console.error("Error fetching posts:", error);
         setFeaturedPosts([]);
       }
     };
@@ -64,7 +66,7 @@ const HomePage = () => {
     <div className="relative min-h-screen overflow-hidden font-sans bg-gradient-to-r from-pink-100 to-white">
       <Header />
       {/* Background Shapes */}
-      
+
       {/* <div className="absolute z-100"> */}
       {/* Original Shapes */}
       {/* <div className="absolute z-10 bg-pink-500 rounded-bl-full opacity-50 right-50 top-50 w-10/2 h-1/2"></div>
@@ -85,7 +87,7 @@ const HomePage = () => {
         animate="visible"
         variants={containerVariants}
       >
-         <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-pink-200 rounded-bl-full opacity-50"></div>
+        <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-pink-200 rounded-bl-full opacity-50"></div>
         <div className="container relative z-10 mx-auto max-w-7xl">
           <div className="flex flex-col items-center gap-8 md:flex-row lg:gap-16">
             <motion.div className="space-y-6 md:w-1/2" variants={itemVariants}>
@@ -157,7 +159,9 @@ const HomePage = () => {
             >
               <Link to={`/blog/${post.id}`}>
                 <img
-                  src={post.featuredImg || "https://via.placeholder.com/300x200"}
+                  src={
+                    post.featuredImg || "https://via.placeholder.com/300x200"
+                  }
                   alt={post.title}
                   className="object-cover w-full h-40 rounded-t-lg sm:h-48"
                 />
@@ -166,7 +170,9 @@ const HomePage = () => {
                     {post.title}
                   </h3>
                   <div className="flex items-center justify-between text-sm text-gray-600">
-                    <span>By <b>{post.author?.name || 'Anonymous'}</b></span>
+                    <span>
+                      By <b>{post.author?.name || "Anonymous"}</b>
+                    </span>
                     <span>{new Date(post.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
@@ -205,7 +211,7 @@ const HomePage = () => {
 
       {/* Share Your Thoughts Section */}
       <motion.section
-        className="flex flex-col items-center gap-8 px-4 py-16 mx-auto sm:px-6 lg:px-8 max-w-7xl md:flex-row lg:gap-16"
+        className="flex flex-col items-center gap-14 px-6 sm:px-10 lg:px-20 py-16 mx-auto max-w-7xl md:flex-row lg:gap-24 justify-between"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
@@ -216,14 +222,13 @@ const HomePage = () => {
           variants={itemVariants}
         >
           <img
-            src="/writing.png"
-            alt="Writing Blog"
-            className="max-w-xs mx-auto sm:max-w-sm md:max-w-md lg:max-w-md"
+            src="/blog.png"
+            alt="Blog"
+            className="max-w-xs w-64 sm:max-w-sm md:max-w-md lg:max-w-md"
           />
         </motion.div>
         <motion.div
-          class
-          Name="space-y-6 md:w-1/2 order-1 md:order-2"
+          className="space-y-6 md:w-1/2 order-1 md:order-2"
           variants={itemVariants}
         >
           <h2 className="text-2xl font-bold text-gray-800 sm:text-3xl lg:text-4xl">
