@@ -113,7 +113,7 @@ const BlogPage = () => {
         duration: 3000,
         position: "top-center",
       });
-      navigate("/login");
+      navigate(`/login?returnUrl=/blog/${id}`);
       return;
     }
 
@@ -161,7 +161,7 @@ const BlogPage = () => {
         duration: 3000,
         position: "top-center",
       });
-      navigate("/login");
+      navigate(`/login?returnUrl=/blog/${id}`);
       return;
     }
 
@@ -205,7 +205,7 @@ const BlogPage = () => {
         duration: 3000,
         position: "top-center",
       });
-      navigate("/login");
+      navigate(`/login?returnUrl=/blog/${id}`);
       return;
     }
 
