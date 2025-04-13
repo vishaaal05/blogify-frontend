@@ -36,7 +36,15 @@ const LoginPage = () => {
           color: "#166534",
         },
       });
-      setTimeout(() => navigate("/user/dashboard"), 1500); // Smooth redirect
+      
+      // Get return URL from query parameters
+      const params = new URLSearchParams(window.location.search);
+      const returnUrl = params.get('returnUrl');
+      
+      // Redirect after brief delay
+      setTimeout(() => {
+        navigate(returnUrl || '/user/dashboard');
+      }, 1500);
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Login failed!";
       toast.error(errorMessage, {
