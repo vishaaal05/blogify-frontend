@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { FaArrowRight, FaEnvelope } from "react-icons/fa";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 
 const HomePage = () => {
   const [featuredPosts, setFeaturedPosts] = useState([]);
@@ -68,9 +69,7 @@ const HomePage = () => {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">
-      <p className="text-lg text-gray-600">Loading featured posts...</p>
-    </div>;
+    return <LoadingSpinner />;
   }
 
   return (
