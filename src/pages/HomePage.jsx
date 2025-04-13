@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { FaArrowRight, FaEnvelope } from "react-icons/fa";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { LoadingSpinner } from "../components/LoadingSpinner";
+import { LoadingSpinner } from "../components/LoaderSpinner";
 
 const HomePage = () => {
   const [featuredPosts, setFeaturedPosts] = useState([]);
@@ -69,7 +69,7 @@ const HomePage = () => {
   };
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <LoadingSpinner/>
   }
 
   return (
