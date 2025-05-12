@@ -95,8 +95,8 @@ const BlogCards = ({ posts, categories }) => {
                         </span>
                       </div>
                       <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <span>♥ {post.likes?.length || 0}</span>
-                        <span>👁 {post.views || 0}</span>
+                        <span className="text-rose-500">♥ {post.likes?.length || 0}</span>
+                        <span >👁 {post.views || 0}</span>
                       </div>
                     </div>
                   </div>

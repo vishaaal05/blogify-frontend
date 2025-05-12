@@ -184,9 +184,9 @@ const HomePage = () => {
                   </p>
                   <div className="flex items-center justify-between text-sm text-gray-600">
                     <span>
-                      By <b>{post.author?.name || "Anonymous"}</b>
+                      By <b className="text-rose-500">{post.author?.name || "Anonymous"}</b>
                     </span>
-                    <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                    <span >{new Date(post.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
               </Link>
