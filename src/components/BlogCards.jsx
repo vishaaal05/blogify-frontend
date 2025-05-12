@@ -34,7 +34,7 @@ const BlogCards = ({ posts, categories }) => {
             {posts.map((post) => (
               <Link to={`/blog/${post.id}`} key={post.id}>
                 <motion.div
-                  className="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl"
+                  className="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl flex flex-col h-[500px]"
                   variants={itemVariants}
                   whileHover={{ y: -5 }}
                   layout
@@ -58,8 +58,10 @@ const BlogCards = ({ posts, categories }) => {
                       </p>
                     </div>
                   </div>
-                  <div className="p-6">
-                    <div className="flex flex-wrap gap-2 mb-3">
+
+                  {/* CONTENT */}
+                  <div className="p-6 flex flex-col flex-grow">
+                    <div className="flex flex-wrap gap-2 mb-2">
                       {post.categories.map((cat) => (
                         <span
                           key={cat.categoryId}
@@ -69,18 +71,20 @@ const BlogCards = ({ posts, categories }) => {
                         </span>
                       ))}
                     </div>
+
                     <h3 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">
                       {post.title}
                     </h3>
+
                     <p
-                      className="text-gray-600 text-sm mb-4 line-clamp-3"
+                      className="text-gray-600 text-sm mb-4 line-clamp-3 flex-grow"
                       dangerouslySetInnerHTML={{
-                        __html:
-                          post.excerpt || post.content?.substring(0, 500) + "...",
+                        __html: post.excerpt || post.content?.substring(0, 500) + "...",
                       }}
                     ></p>
 
-                    <div className="flex items-center justify-between">
+                    {/* FOOTER */}
+                    <div className="flex items-center justify-between mt-auto">
                       <div className="flex items-center space-x-2">
                         <img
                           src={
@@ -96,7 +100,7 @@ const BlogCards = ({ posts, categories }) => {
                       </div>
                       <div className="flex items-center space-x-4 text-sm text-gray-500">
                         <span className="text-rose-500">♥ {post.likes?.length || 0}</span>
-                        <span >👁 {post.views || 0}</span>
+                        <span>👁 {post.views || 0}</span>
                       </div>
                     </div>
                   </div>
