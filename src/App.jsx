@@ -9,6 +9,8 @@ import ViewBlogPage from "./pages/ViewBlogPage";
 import UserDashboard from "./pages/UserDashboardPage";
 import CreateBlog from "./pages/CreateBlog";
 import UpdateBlog from "./pages/UpdateBlog";
+import ContactUs from "./pages/ContactUs";
+import AboutUs from "./pages/About.jsx";
 import 'primereact/resources/themes/lara-light-indigo/theme.css'; // Theme
 import 'primereact/resources/primereact.min.css'; // Core CSS
 import 'primeicons/primeicons.css'; // Icons
@@ -27,6 +29,8 @@ function App() {
           <Route path="/blog" element={<BlogsPage />}></Route>
           <Route path="/create/post" element={<CreateBlog/>}></Route>
           <Route path="/update/post/:postId" element={<UpdateBlog/>}></Route>
+          <Route path="/reachus" element={<ContactUs />} />
+          <Route path="/about" element={<AboutUs />} />
 
         </Routes>
       </div>
