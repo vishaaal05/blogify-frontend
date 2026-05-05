@@ -4,11 +4,12 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { Editor } from "primereact/editor"; // Import PrimeReact Editor
-import "primereact/resources/themes/lara-light-indigo/theme.css"; // Theme
-import "primereact/resources/primereact.min.css"; // Core CSS
-import "primeicons/primeicons.css"; // Icons
-import toast, { Toaster } from 'react-hot-toast'; // Import toast
+import { Editor } from "primereact/editor";
+import "primereact/resources/themes/lara-light-indigo/theme.css";
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
+import toast, { Toaster } from "react-hot-toast";
+import { API_ENDPOINTS } from "../config/api";
 
 // Animation Variants
 const containerVariants = {
@@ -47,10 +48,8 @@ const CreateBlog = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(
-        "https://blogify-backend-sxn5.onrender.com/v1/api/categories"
-      );
-      setCategories(response.data.categories || []); // Changed from data.data to data.categories
+      const response = await axios.get(API_ENDPOINTS.CATEGORIES);
+      setCategories(response.data.categories || []);
     } catch (err) {
       console.error("Error fetching categories:", err);
     }
@@ -65,20 +64,20 @@ const CreateBlog = () => {
     const token = localStorage.getItem("token");
     try {
       const response = await axios.post(
-        "https://blogify-backend-sxn5.onrender.com/v1/api/categories",
+        API_ENDPOINTS.CATEGORIES,
         { name: newCategory },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       const newCategoryData = {
         id: response.data.category.id,
-        name: response.data.category.name
+        name: response.data.category.name,
       };
-      
+
       setCategories([...categories, newCategoryData]);
       setSelectedCategory(newCategoryData.id);
       setNewCategory("");
@@ -94,31 +93,27 @@ const CreateBlog = () => {
   const uploadImageToCloudinary = async (file) => {
     setUploading(true);
     const formData = new FormData();
-    formData.append('image', file);
-    
+    formData.append("image", file);
+
     const token = localStorage.getItem("token");
     try {
-      const response = await axios.post(
-        'https://blogify-backend-sxn5.onrender.com/api/v1/upload',
-        formData,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
-          }
-        }
-      );
-      
+      const response = await axios.post(API_ENDPOINTS.POSTS_UPLOAD, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       // Handle the correct response structure
       if (response.data.success && response.data.imageUrl) {
         setFeaturedImg(response.data.imageUrl);
-        toast.success('Image uploaded successfully!');
+        toast.success("Image uploaded successfully!");
       } else {
-        throw new Error('Failed to get image URL from server');
+        throw new Error("Failed to get image URL from server");
       }
     } catch (err) {
-      console.error('Error uploading image:', err);
-      toast.error(err.response?.data?.message || 'Failed to upload image');
+      console.error("Error uploading image:", err);
+      toast.error(err.response?.data?.message || "Failed to upload image");
       setImagePreview(null); // Clear preview on error
     } finally {
       setUploading(false);
@@ -128,8 +123,9 @@ const CreateBlog = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        toast.error('Image size should be less than 5MB');
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB limit
+        toast.error("Image size should be less than 5MB");
         return;
       }
       setImageFile(file);
@@ -156,7 +152,7 @@ const CreateBlog = () => {
     try {
       // First create the blog post
       const response = await axios.post(
-        "https://blogify-backend-sxn5.onrender.com/v1/api/posts/create",
+        API_ENDPOINTS.POSTS_CREATE,
         {
           title,
           content,
@@ -169,7 +165,7 @@ const CreateBlog = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       const newPostId = response.data.post.id;
@@ -178,17 +174,17 @@ const CreateBlog = () => {
       if (selectedCategory) {
         try {
           await axios.post(
-            "https://blogify-backend-sxn5.onrender.com/v1/api/categories/add/post",
+            API_ENDPOINTS.CATEGORIES_ADD_POST,
             {
               postId: newPostId,
-              categoryId: selectedCategory
+              categoryId: selectedCategory,
             },
             {
               headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
               },
-            }
+            },
           );
         } catch (categoryErr) {
           console.error("Error associating category:", categoryErr);
@@ -198,14 +194,13 @@ const CreateBlog = () => {
 
       toast.success("Blog post created successfully!", {
         duration: 3000,
-        icon: '🎉',
+        icon: "🎉",
       });
-      
+
       // Add a small delay before navigation to ensure toast is visible
       setTimeout(() => {
         navigate(`/blog/${newPostId}`);
       }, 1000);
-
     } catch (err) {
       console.error("Error creating blog:", err.response?.data || err.message);
       setError(err.response?.data?.message || "Failed to create blog post.");

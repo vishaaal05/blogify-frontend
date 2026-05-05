@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Header } from "../components/Header";
 import Loader from "../components/Loader";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { API_ENDPOINTS } from "../config/api";
 
 const containerVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -60,41 +61,40 @@ const UserDashboard = () => {
         const decoded = jwtDecode(token);
         setUser(decoded);
 
-        const postsResponse = await axios.get(
-          "https://blogify-backend-sxn5.onrender.com/v1/api/posts",
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const postsResponse = await axios.get(API_ENDPOINTS.POSTS, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         const allPosts = Array.isArray(postsResponse.data.data)
           ? postsResponse.data.data
           : Array.isArray(postsResponse.data)
-          ? postsResponse.data
-          : [];
+            ? postsResponse.data
+            : [];
 
         setLikedPosts(
           allPosts.filter((post) =>
-            post.likes?.some((like) => like.userId === decoded.id)
-          )
+            post.likes?.some((like) => like.userId === decoded.id),
+          ),
         );
         setFavoritedPosts(
           allPosts.filter((post) =>
-            post.favoritedBy?.some((fav) => fav.userId === decoded.id)
-          )
+            post.favoritedBy?.some((fav) => fav.userId === decoded.id),
+          ),
         );
         setCommentedPosts(
           allPosts.filter((post) =>
-            post.comments?.some((comment) => comment.userId === decoded.id)
-          )
+            post.comments?.some((comment) => comment.userId === decoded.id),
+          ),
         );
 
         const authorResponse = await axios.get(
-          `https://blogify-backend-sxn5.onrender.com/v1/api/posts/author/${decoded.id}`,
-          { headers: { Authorization: `Bearer ${token}` } }
+          `${API_ENDPOINTS.POSTS}/author/${decoded.id}`,
+          { headers: { Authorization: `Bearer ${token}` } },
         );
         const userPostsData = Array.isArray(authorResponse.data.data)
           ? authorResponse.data.data
           : Array.isArray(authorResponse.data)
-          ? authorResponse.data
-          : [];
+            ? authorResponse.data
+            : [];
         setUserPosts(userPostsData);
 
         setLoading(false);
@@ -122,12 +122,16 @@ const UserDashboard = () => {
       </button>
       <motion.div
         initial={false}
-        animate={isOpen ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }}
+        animate={
+          isOpen ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }
+        }
         transition={{ duration: 0.3 }}
         className="overflow-hidden"
       >
         {posts.length === 0 ? (
-          <p className="text-gray-600 text-sm">No posts in this category yet.</p>
+          <p className="text-gray-600 text-sm">
+            No posts in this category yet.
+          </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {posts.map((post) => (
@@ -181,9 +185,7 @@ const UserDashboard = () => {
       </div>
     );
   if (error)
-    return (
-      <div className="text-center py-8 text-red-500 text-sm">{error}</div>
-    );
+    return <div className="text-center py-8 text-red-500 text-sm">{error}</div>;
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans relative overflow-hidden">
@@ -232,7 +234,8 @@ const UserDashboard = () => {
                   Your Profile
                 </h2>
                 <p className="text-gray-600 text-sm truncate">
-                  Email: <span className="font-medium">{user?.email || "N/A"}</span>
+                  Email:{" "}
+                  <span className="font-medium">{user?.email || "N/A"}</span>
                 </p>
                 <p className="text-gray-600 text-sm">
                   ID: <span className="font-medium">{user?.id || "N/A"}</span>
@@ -252,28 +255,36 @@ const UserDashboard = () => {
                     onClick={() => setShowLiked(!showLiked)}
                     className="bg-gray-200 p-3 rounded-md text-center  hover:bg-gray-500 transition-colors"
                   >
-                    <span className="block text-2xl font-bold">{likedPosts.length}</span>
+                    <span className="block text-2xl font-bold">
+                      {likedPosts.length}
+                    </span>
                     <span className="text-xs">Likes given</span>
                   </button>
                   <button
                     onClick={() => setShowFavorited(!showFavorited)}
                     className="bg-gray-200 p-3 rounded-md text-center hover:bg-gray-500 transition-colors"
                   >
-                    <span className="block text-2xl font-bold">{favoritedPosts.length}</span>
+                    <span className="block text-2xl font-bold">
+                      {favoritedPosts.length}
+                    </span>
                     <span className="text-xs">Favorited</span>
                   </button>
                   <button
                     onClick={() => setShowCommented(!showCommented)}
                     className="bg-gray-200 p-3 rounded-md text-center hover:bg-gray-500 transition-colors"
                   >
-                    <span className="block text-2xl font-bold">{commentedPosts.length}</span>
+                    <span className="block text-2xl font-bold">
+                      {commentedPosts.length}
+                    </span>
                     <span className="text-xs">Commented</span>
                   </button>
                   <button
                     onClick={() => setShowUserPosts(!showUserPosts)}
                     className="bg-gray-200 p-3 rounded-md text-center hover:bg-gray-500 transition-colors"
                   >
-                    <span className="block text-2xl font-bold">{userPosts.length}</span>
+                    <span className="block text-2xl font-bold">
+                      {userPosts.length}
+                    </span>
                     <span className="text-xs">Posts</span>
                   </button>
                 </div>
@@ -282,10 +293,24 @@ const UserDashboard = () => {
 
             {/* Post Sections */}
             <div className="space-y-6">
-              {renderPostSection("Your Posts", userPosts, showUserPosts, () => setShowUserPosts(!showUserPosts))}
-              {renderPostSection("Liked Posts", likedPosts, showLiked, () => setShowLiked(!showLiked))}
-              {renderPostSection("Favorited Posts", favoritedPosts, showFavorited, () => setShowFavorited(!showFavorited))}
-              {renderPostSection("Commented Posts", commentedPosts, showCommented, () => setShowCommented(!showCommented))}
+              {renderPostSection("Your Posts", userPosts, showUserPosts, () =>
+                setShowUserPosts(!showUserPosts),
+              )}
+              {renderPostSection("Liked Posts", likedPosts, showLiked, () =>
+                setShowLiked(!showLiked),
+              )}
+              {renderPostSection(
+                "Favorited Posts",
+                favoritedPosts,
+                showFavorited,
+                () => setShowFavorited(!showFavorited),
+              )}
+              {renderPostSection(
+                "Commented Posts",
+                commentedPosts,
+                showCommented,
+                () => setShowCommented(!showCommented),
+              )}
             </div>
 
             {/* Quick Links */}

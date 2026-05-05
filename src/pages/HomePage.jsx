@@ -5,6 +5,7 @@ import { FaArrowRight, FaEnvelope } from "react-icons/fa";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { LoadingSpinner } from "../components/LoaderSpinner";
+import { API_ENDPOINTS } from "../config/api";
 
 const HomePage = () => {
   const [featuredPosts, setFeaturedPosts] = useState([]);
@@ -14,10 +15,8 @@ const HomePage = () => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(
-          "https://blogify-backend-sxn5.onrender.com/v1/api/posts"
-        );
-        console.log('API Response:', response.data); // Debug log
+        const response = await axios.get(API_ENDPOINTS.POSTS);
+        console.log("API Response:", response.data); // Debug log
 
         if (response.data && response.data.posts) {
           setFeaturedPosts(response.data.posts.slice(0, 3));
@@ -69,7 +68,7 @@ const HomePage = () => {
   };
 
   if (loading) {
-    return <LoadingSpinner/>
+    return <LoadingSpinner />;
   }
 
   return (
@@ -180,13 +179,18 @@ const HomePage = () => {
                     {post.title}
                   </h3>
                   <p className="mb-3 text-sm text-gray-600 line-clamp-3">
-                    {post.content ? post.content.substring(0, 150) + "..." : "No content available"}
+                    {post.content
+                      ? post.content.substring(0, 150) + "..."
+                      : "No content available"}
                   </p>
                   <div className="flex items-center justify-between text-sm text-gray-600">
                     <span>
-                      By <b className="text-rose-500">{post.author?.name || "Anonymous"}</b>
+                      By{" "}
+                      <b className="text-rose-500">
+                        {post.author?.name || "Anonymous"}
+                      </b>
                     </span>
-                    <span >{new Date(post.createdAt).toLocaleDateString()}</span>
+                    <span>{new Date(post.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
               </Link>

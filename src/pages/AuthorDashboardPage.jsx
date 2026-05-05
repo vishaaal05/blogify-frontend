@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Header } from "../components/Header";
 import Loader from "../components/Loader";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { API_ENDPOINTS } from "../config/api";
 
 const containerVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -63,16 +64,19 @@ const DashboardPage = () => {
         setUser(decoded);
 
         const response = await axios.get(
-          `https://blogify-backend-sxn5.onrender.com/v1/api/posts/author/${decoded.id}`,
-          { headers: { Authorization: `Bearer ${token}` } }
+          `${API_ENDPOINTS.POSTS}/author/${decoded.id}`,
+          { headers: { Authorization: `Bearer ${token}` } },
         );
         const fetchedPosts = Array.isArray(response.data.data)
           ? response.data.data
           : Array.isArray(response.data)
-          ? response.data
-          : [];
-        
-        const likes = fetchedPosts.reduce((total, post) => total + (post.likes?.length || 0), 0);
+            ? response.data
+            : [];
+
+        const likes = fetchedPosts.reduce(
+          (total, post) => total + (post.likes?.length || 0),
+          0,
+        );
         setTotalLikes(likes);
         setPosts(fetchedPosts);
         setLoading(false);
@@ -96,10 +100,9 @@ const DashboardPage = () => {
     if (!confirm("Are you sure you want to delete this post?")) return;
 
     try {
-      await axios.delete(
-        `https://blogify-backend-sxn5.onrender.com/v1/api/posts/${postId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.delete(`${API_ENDPOINTS.POSTS}/${postId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setPosts(posts.filter((post) => post.id !== postId));
     } catch (err) {
       alert("Failed to delete post.");
@@ -165,7 +168,8 @@ const DashboardPage = () => {
                   Your Profile
                 </h2>
                 <p className="text-sm text-gray-600 truncate sm:text-base">
-                  Email: <span className="font-medium">{user?.email || "N/A"}</span>
+                  Email:{" "}
+                  <span className="font-medium">{user?.email || "N/A"}</span>
                 </p>
                 <p className="text-sm text-gray-600 sm:text-base">
                   ID: <span className="font-medium">{user?.id || "N/A"}</span>
@@ -186,14 +190,18 @@ const DashboardPage = () => {
                     onClick={() => {}}
                     className="bg-gray-200 p-3 rounded-md text-center hover:bg-gray-500 transition-colors"
                   >
-                    <span className="block text-2xl font-bold">{posts.length}</span>
+                    <span className="block text-2xl font-bold">
+                      {posts.length}
+                    </span>
                     <span className="text-xs">Total Posts</span>
                   </button>
                   <button
                     onClick={() => {}}
                     className="bg-gray-200 p-3 rounded-md text-center hover:bg-gray-500 transition-colors"
                   >
-                    <span className="block text-2xl font-bold">{totalLikes}</span>
+                    <span className="block text-2xl font-bold">
+                      {totalLikes}
+                    </span>
                     <span className="text-xs">Likes Received</span>
                   </button>
                 </div>

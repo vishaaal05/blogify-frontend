@@ -6,6 +6,7 @@ import { Header } from "../components/Header";
 import Loader from "../components/Loader";
 import { FaHeart, FaRegHeart, FaStar, FaRegStar } from "react-icons/fa";
 import toast, { Toaster } from "react-hot-toast";
+import { API_ENDPOINTS } from "../config/api";
 
 // Helper function for formatting comment timestamps
 const formatCommentTime = (timestamp) => {
@@ -70,12 +71,8 @@ const BlogPage = () => {
     const fetchData = async () => {
       try {
         const [postResponse, commentsResponse] = await Promise.all([
-          axios.get(
-            `https://blogify-backend-sxn5.onrender.com/v1/api/posts/${id}`
-          ),
-          axios.get(
-            `https://blogify-backend-sxn5.onrender.com/v1/api/comments/post/${id}`
-          ),
+          axios.get(`${API_ENDPOINTS.POSTS}/${id}`),
+          axios.get(`${API_ENDPOINTS.COMMENTS}/post/${id}`),
         ]);
 
         setPost(postResponse.data.post);
@@ -86,12 +83,12 @@ const BlogPage = () => {
         if (token) {
           const userId = JSON.parse(atob(token.split(".")[1])).id;
           setIsLiked(
-            postResponse.data.post.likes.some((like) => like.userId === userId)
+            postResponse.data.post.likes.some((like) => like.userId === userId),
           );
           setIsFavorited(
             postResponse.data.post.favorites?.some(
-              (fav) => fav.userId === userId
-            ) || false
+              (fav) => fav.userId === userId,
+            ) || false,
           );
         }
       } catch (err) {
@@ -120,9 +117,9 @@ const BlogPage = () => {
     try {
       const userId = JSON.parse(atob(token.split(".")[1])).id;
       const response = await axios.post(
-        "https://blogify-backend-sxn5.onrender.com/v1/api/likes/toggle",
+        API_ENDPOINTS.LIKES_TOGGLE,
         { postId: id },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       setPost((prevPost) => {
@@ -167,9 +164,9 @@ const BlogPage = () => {
 
     try {
       const response = await axios.post(
-        "https://blogify-backend-sxn5.onrender.com/v1/api/favorites/toggle",
+        API_ENDPOINTS.FAVORITES_TOGGLE,
         { postId: id },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       setIsFavorited(!isFavorited);
@@ -179,7 +176,7 @@ const BlogPage = () => {
           duration: 2000,
           position: "top-center",
           style: { background: "#dcfce7", color: "#166534" },
-        }
+        },
       );
 
       if (response.data.favorites) {
@@ -220,14 +217,14 @@ const BlogPage = () => {
     try {
       const userData = JSON.parse(atob(token.split(".")[1]));
       const response = await axios.post(
-        "https://blogify-backend-sxn5.onrender.com/v1/api/comments/",
-        { 
-          postId: id, 
+        API_ENDPOINTS.COMMENTS,
+        {
+          postId: id,
           content: newComment,
           userId: userData.id,
-          userName: userData.name
+          userName: userData.name,
         },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       // Make sure we're using the data from the response
@@ -237,11 +234,11 @@ const BlogPage = () => {
         user: {
           id: userData.id,
           name: userData.name,
-          email: userData.email
-        }
+          email: userData.email,
+        },
       };
 
-      setComments(prevComments => [newCommentData, ...prevComments]);
+      setComments((prevComments) => [newCommentData, ...prevComments]);
       setNewComment("");
       toast.success("Comment posted!", {
         duration: 2000,
@@ -276,7 +273,7 @@ const BlogPage = () => {
     <div className="relative min-h-screen overflow-hidden font-sans bg-gradient-to-br from-rose-100 via-white to-pink-150">
       <Header />
       <Toaster />
-    
+
       <motion.section
         className="relative z-10 max-w-4xl px-4 py-12 mx-auto mt-12 sm:px-6 lg:px-8"
         initial="hidden"

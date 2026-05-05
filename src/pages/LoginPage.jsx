@@ -5,6 +5,7 @@ import { Header } from "../components/Header";
 import Button from "../components/Button";
 import { useNavigate, Link } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import { API_ENDPOINTS } from "../config/api";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -23,10 +24,7 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        "https://blogify-backend-sxn5.onrender.com/v1/api/users/login",
-        formData
-      );
+      const response = await axios.post(API_ENDPOINTS.LOGIN, formData);
       localStorage.setItem("token", response.data.token);
       toast.success("Welcome back! Login successful!", {
         duration: 3000,
@@ -36,14 +34,14 @@ const LoginPage = () => {
           color: "#166534",
         },
       });
-      
+
       // Get return URL from query parameters
       const params = new URLSearchParams(window.location.search);
-      const returnUrl = params.get('returnUrl');
-      
+      const returnUrl = params.get("returnUrl");
+
       // Redirect after brief delay
       setTimeout(() => {
-        navigate(returnUrl || '/user/dashboard');
+        navigate(returnUrl || "/user/dashboard");
       }, 1500);
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Login failed!";

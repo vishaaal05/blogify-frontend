@@ -6,6 +6,7 @@ import Button from "../components/Button";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import { API_ENDPOINTS } from "../config/api";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -25,10 +26,7 @@ const SignUpPage = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        "https://blogify-backend-sxn5.onrender.com/v1/api/users/register",
-        formData
-      );
+      const response = await axios.post(API_ENDPOINTS.REGISTER, formData);
       toast.success("Welcome aboard! Registration successful!", {
         duration: 3000,
         position: "top-center",
@@ -41,7 +39,7 @@ const SignUpPage = () => {
         {
           duration: 4000,
           position: "top-center",
-        }
+        },
       );
     } finally {
       setLoading(false);

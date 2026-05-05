@@ -4,6 +4,7 @@ import { Header } from "../components/Header";
 import BlogCards from "../components/BlogCards";
 import Loader from "../components/Loader";
 import { motion } from "framer-motion";
+import { API_ENDPOINTS } from "../config/api";
 
 const BlogsPage = () => {
   const [posts, setPosts] = useState([]);
@@ -16,21 +17,21 @@ const BlogsPage = () => {
     const fetchData = async () => {
       try {
         const [postsResponse, categoriesResponse] = await Promise.all([
-          axios.get("https://blogify-backend-sxn5.onrender.com/v1/api/posts"),
-          axios.get("https://blogify-backend-sxn5.onrender.com/v1/api/categories")
+          axios.get(API_ENDPOINTS.POSTS),
+          axios.get(API_ENDPOINTS.CATEGORIES),
         ]);
 
         const publishedPosts = postsResponse.data.filter(
-          (post) => post.status === "published"
+          (post) => post.status === "published",
         );
         setPosts(publishedPosts);
-        
-        const categoriesData = Array.isArray(categoriesResponse.data.categories) 
-          ? categoriesResponse.data.categories 
-          : Array.isArray(categoriesResponse.data) 
-            ? categoriesResponse.data 
+
+        const categoriesData = Array.isArray(categoriesResponse.data.categories)
+          ? categoriesResponse.data.categories
+          : Array.isArray(categoriesResponse.data)
+            ? categoriesResponse.data
             : [];
-            
+
         setCategories(categoriesData);
         setLoading(false);
       } catch (err) {
@@ -43,11 +44,12 @@ const BlogsPage = () => {
     fetchData();
   }, []);
 
-  const filteredPosts = selectedCategory === "all" 
-    ? posts 
-    : posts.filter(post => 
-        post.categories.some(cat => cat.categoryId === selectedCategory)
-      );
+  const filteredPosts =
+    selectedCategory === "all"
+      ? posts
+      : posts.filter((post) =>
+          post.categories.some((cat) => cat.categoryId === selectedCategory),
+        );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -61,7 +63,7 @@ const BlogsPage = () => {
           <div className="text-center py-8 text-red-500">{error}</div>
         ) : (
           <>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               className="mb-8 px-4"
@@ -93,10 +95,7 @@ const BlogsPage = () => {
                 ))}
               </div>
             </motion.div>
-            <BlogCards 
-              posts={filteredPosts} 
-              categories={categories}
-            />
+            <BlogCards posts={filteredPosts} categories={categories} />
           </>
         )}
       </div>

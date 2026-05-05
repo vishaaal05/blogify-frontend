@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Editor } from "primereact/editor";
 import toast, { Toaster } from "react-hot-toast";
+import { API_ENDPOINTS } from "../config/api";
 
 // Animation Variants
 const containerVariants = {
@@ -45,9 +46,7 @@ const UpdateBlog = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(
-        "https://blogify-backend-sxn5.onrender.com/v1/api/categories"
-      );
+      const response = await axios.get(API_ENDPOINTS.CATEGORIES);
       setCategories(response.data.categories || []);
     } catch (err) {
       console.error("Error fetching categories:", err);
@@ -63,12 +62,9 @@ const UpdateBlog = () => {
     }
 
     try {
-      const response = await axios.get(
-        `https://blogify-backend-sxn5.onrender.com/v1/api/posts/${postId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.get(`${API_ENDPOINTS.POSTS}/${postId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const post = response.data.post; // Assuming { success: true, post: {...} }
       setTitle(post.title);
       setContent(post.content);
@@ -80,12 +76,9 @@ const UpdateBlog = () => {
       }
       setLoading(false);
     } catch (err) {
-      console.error(
-        "Error fetching post:",
-        err.response?.data || err.message
-      );
+      console.error("Error fetching post:", err.response?.data || err.message);
       setError(
-        "Failed to load blog post. It may not exist or you lack permission."
+        "Failed to load blog post. It may not exist or you lack permission.",
       );
       setLoading(false);
     }
@@ -98,16 +91,12 @@ const UpdateBlog = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await axios.post(
-        "https://blogify-backend-sxn5.onrender.com/api/v1/upload",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post(API_ENDPOINTS.POSTS_UPLOAD, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (response.data.success && response.data.imageUrl) {
         setFeaturedImg(response.data.imageUrl);
@@ -153,7 +142,7 @@ const UpdateBlog = () => {
     try {
       // First update the post
       const updateResponse = await axios.put(
-        `https://blogify-backend-sxn5.onrender.com/v1/api/posts/${postId}`,
+        `${API_ENDPOINTS.POSTS}/${postId}`,
         {
           title,
           content,
@@ -166,7 +155,7 @@ const UpdateBlog = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       // Show success message
