@@ -1,6 +1,7 @@
 // API Configuration
-export const API_BASE_URL = "https://blogify-backend-sxn5.onrender.com";
-// export const API_BASE_URL = "http://localhost:6002";
+export const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://blogify-backend-sxn5.onrender.com";
 export const API_VERSION = "v1/api";
 
 export const API_ENDPOINTS = {
