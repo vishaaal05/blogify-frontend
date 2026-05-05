@@ -3,9 +3,11 @@ import { useState } from "react";
 import axios from "axios";
 import { Header } from "../components/Header";
 import Button from "../components/Button";
+import GoogleAuthButton from "../components/GoogleAuthButton";
 import { useNavigate, Link } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { API_ENDPOINTS } from "../config/api";
+import { exchangeGoogleCredential } from "../services/googleAuth";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -55,6 +57,42 @@ const LoginPage = () => {
       });
       setFormData({ email: "", password: "" });
       console.error("Login error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credential) => {
+    setLoading(true);
+
+    try {
+      const data = await exchangeGoogleCredential(credential, "signin");
+      localStorage.setItem("token", data.token);
+
+      toast.success(data.message || "Google sign in successful!", {
+        duration: 3000,
+        position: "top-center",
+        style: {
+          background: "#dcfce7",
+          color: "#166534",
+        },
+      });
+
+      const params = new URLSearchParams(window.location.search);
+      const returnUrl = params.get("returnUrl");
+
+      setTimeout(() => {
+        navigate(returnUrl || "/user/dashboard");
+      }, 1200);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Google sign in failed!", {
+        duration: 4000,
+        position: "top-center",
+        style: {
+          background: "#fee2e2",
+          color: "#dc2626",
+        },
+      });
     } finally {
       setLoading(false);
     }
@@ -176,6 +214,16 @@ const LoginPage = () => {
                 className="w-full py-3 font-semibold text-white transition-all rounded-lg bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700"
               />
             </motion.div>
+
+            <div className="flex items-center gap-3">
+              <div className="h-px flex-1 bg-gray-200" />
+              <span className="text-xs font-medium tracking-wide text-gray-400 uppercase">
+                or
+              </span>
+              <div className="h-px flex-1 bg-gray-200" />
+            </div>
+
+            <GoogleAuthButton flow="signin" onSuccess={handleGoogleSuccess} />
           </form>
 
           <motion.p

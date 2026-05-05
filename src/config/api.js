@@ -1,6 +1,6 @@
 // API Configuration
-// export const API_BASE_URL = "https://blogify-backend-sxn5.onrender.com";
-export const API_BASE_URL = "http://localhost:6002";
+export const API_BASE_URL = "https://blogify-backend-sxn5.onrender.com";
+// export const API_BASE_URL = "http://localhost:6002";
 export const API_VERSION = "v1/api";
 
 export const API_ENDPOINTS = {
@@ -16,6 +16,7 @@ export const API_ENDPOINTS = {
   // Auth
   LOGIN: `${API_BASE_URL}/${API_VERSION}/users/login`,
   REGISTER: `${API_BASE_URL}/${API_VERSION}/users/register`,
+  GOOGLE_AUTH: `${API_BASE_URL}/${API_VERSION}/auth/google`,
 
   // Comments
   COMMENTS: `${API_BASE_URL}/${API_VERSION}/comments`,
