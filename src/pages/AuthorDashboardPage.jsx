@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Header } from "../components/Header";
 import Loader from "../components/Loader";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import toast, { Toaster } from "react-hot-toast";
 import { API_ENDPOINTS } from "../config/api";
 
 const containerVariants = {
@@ -50,6 +51,7 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalLikes, setTotalLikes] = useState(0);
+  const [postToDelete, setPostToDelete] = useState(null);
 
   useEffect(() => {
     const checkAuthAndFetchPosts = async () => {
@@ -95,17 +97,43 @@ const DashboardPage = () => {
     navigate("/login");
   };
 
-  const handleDeletePost = async (postId) => {
+  const openDeleteModal = (post) => {
+    setPostToDelete(post);
+  };
+
+  const closeDeleteModal = () => {
+    setPostToDelete(null);
+  };
+
+  const handleDeletePost = async () => {
+    if (!postToDelete) return;
+
     const token = localStorage.getItem("token");
-    if (!confirm("Are you sure you want to delete this post?")) return;
 
     try {
-      await axios.delete(`${API_ENDPOINTS.POSTS}/${postId}`, {
+      await axios.delete(`${API_ENDPOINTS.POSTS}/${postToDelete.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setPosts(posts.filter((post) => post.id !== postId));
+
+      setPosts(posts.filter((post) => post.id !== postToDelete.id));
+      toast.success("Post deleted successfully", {
+        duration: 2500,
+        position: "top-center",
+        style: {
+          background: "#dcfce7",
+          color: "#166534",
+        },
+      });
+      closeDeleteModal();
     } catch (err) {
-      alert("Failed to delete post.");
+      toast.error("Failed to delete post", {
+        duration: 3000,
+        position: "top-center",
+        style: {
+          background: "#fee2e2",
+          color: "#991b1b",
+        },
+      });
     }
   };
 
@@ -261,7 +289,7 @@ const DashboardPage = () => {
                           Update
                         </button>
                         <button
-                          onClick={() => handleDeletePost(post.id)}
+                          onClick={() => openDeleteModal(post)}
                           className="bg-red-500 text-white px-3 py-1.5 rounded-full hover:bg-red-600 transition-all duration-200 text-sm"
                         >
                           Delete
@@ -295,6 +323,59 @@ const DashboardPage = () => {
           </motion.div>
         </div>
       </motion.section>
+
+      <Toaster />
+
+      {postToDelete && (
+        <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          onClick={closeDeleteModal}
+        >
+          <motion.div
+            className="w-full max-w-md overflow-hidden bg-white shadow-2xl rounded-2xl"
+            initial={{ scale: 0.92, y: 20, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 220, damping: 22 }}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-red-50 to-pink-50">
+              <p className="text-sm font-semibold tracking-wide text-red-600 uppercase">
+                Confirm Delete
+              </p>
+              <h3 className="mt-1 text-xl font-bold text-gray-900">
+                Delete this post?
+              </h3>
+            </div>
+
+            <div className="px-6 py-5">
+              <p className="text-sm leading-6 text-gray-600">
+                This will permanently remove{" "}
+                <span className="font-semibold text-gray-900">
+                  {postToDelete.title}
+                </span>
+                . This action cannot be undone.
+              </p>
+
+              <div className="flex flex-col-reverse gap-3 mt-6 sm:flex-row sm:justify-end">
+                <button
+                  onClick={closeDeleteModal}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 transition-colors bg-gray-100 rounded-full hover:bg-gray-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeletePost}
+                  className="px-4 py-2 text-sm font-medium text-white transition-colors bg-red-500 rounded-full hover:bg-red-600"
+                >
+                  Yes, delete
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 };

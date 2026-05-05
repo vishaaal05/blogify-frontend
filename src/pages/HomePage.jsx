@@ -131,7 +131,7 @@ const HomePage = () => {
             variants={bubbleVariants}
           >
             <img
-              src="https://avatar.iran.liara.run/public/girl"
+              src="https://res.cloudinary.com/dg5vxekxq/image/upload/v1777962129/Freepik___Find_the_right_plan_for_you_kri5dm.jpg"
               alt="User Avatar"
               className="flex-shrink-0 w-10 h-10 rounded-full"
             />

@@ -102,7 +102,7 @@ export const Header = () => {
                     aria-label="Toggle profile menu"
                   >
                     <img
-                      src="https://avatar.iran.liara.run/public/boy"
+                      src="https://res.cloudinary.com/dg5vxekxq/image/upload/v1777962129/Freepik___Find_the_right_plan_for_you_kri5dm.jpg"
                       alt="Profile"
                       className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
                     />
@@ -210,7 +210,7 @@ export const Header = () => {
                 aria-label="Toggle profile menu"
               >
                 <img
-                  src="https://avatar.iran.liara.run/public/boy"
+                  src=""
                   alt="Profile"
                   className="w-8 h-8 rounded-full"
                 />

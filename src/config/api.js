@@ -1,12 +1,13 @@
 // API Configuration
-export const API_BASE_URL = "https://blogify-backend-sxn5.onrender.com";
+// export const API_BASE_URL = "https://blogify-backend-sxn5.onrender.com";
+export const API_BASE_URL = "http://localhost:6002";
 export const API_VERSION = "v1/api";
 
 export const API_ENDPOINTS = {
   // Posts
   POSTS: `${API_BASE_URL}/${API_VERSION}/posts`,
   POSTS_CREATE: `${API_BASE_URL}/${API_VERSION}/posts/create`,
-  POSTS_UPLOAD: `${API_BASE_URL}/api/v1/upload`,
+  POSTS_UPLOAD: `${API_BASE_URL}/${API_VERSION}/upload`,
 
   // Categories
   CATEGORIES: `${API_BASE_URL}/${API_VERSION}/categories`,

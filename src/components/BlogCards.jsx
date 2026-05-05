@@ -89,7 +89,7 @@ const BlogCards = ({ posts, categories }) => {
                         <img
                           src={
                             post.author?.avatar ||
-                            "https://avatar.iran.liara.run/public/boy"
+                            "https://res.cloudinary.com/dg5vxekxq/image/upload/v1777962129/Freepik___Find_the_right_plan_for_you_kri5dm.jpg"
                           }
                           alt={post.author?.name}
                           className="w-8 h-8 rounded-full"
