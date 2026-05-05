@@ -32,7 +32,7 @@ const GoogleAuthButton = ({ flow = "signin", onSuccess, onError }) => {
   }, [onSuccess, onError]);
 
   useEffect(() => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    const clientId = "34299648064-9csvpr4beptcn5f3jbks1ioe1rokudbq.apps.googleusercontent.com";
 
     if (!clientId || !buttonRef.current) {
       return undefined;
@@ -72,13 +72,13 @@ const GoogleAuthButton = ({ flow = "signin", onSuccess, onError }) => {
     };
   }, [flow]);
 
-  if (!import.meta.env.VITE_GOOGLE_CLIENT_ID) {
-    return (
-      <div className="p-3 text-sm text-center text-amber-700 bg-amber-50 rounded-xl border border-amber-200">
-        Set VITE_GOOGLE_CLIENT_ID to enable Google sign in.
-      </div>
-    );
-  }
+//   if (!import.meta.env.VITE_GOOGLE_CLIENT_ID) {
+//     return (
+//       <div className="p-3 text-sm text-center text-amber-700 bg-amber-50 rounded-xl border border-amber-200">
+//         Set VITE_GOOGLE_CLIENT_ID to enable Google sign in.
+//       </div>
+//     );
+//   }
 
   return <div ref={buttonRef} className="w-full overflow-hidden" />;
 };
